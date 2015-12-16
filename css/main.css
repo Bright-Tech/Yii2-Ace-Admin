@@ -1,0 +1,378 @@
+@charset "UTF-8";
+.full-height {
+  height: 100%; }
+
+.side-nav-bar {
+  overflow: auto;
+  background-color: #2F3A4C; }
+  .side-nav-bar .side-bar-button {
+    padding: 15px 0; }
+    @media screen and (max-width: 1200px) {
+      .side-nav-bar .side-bar-button {
+        padding: 5px 0; } }
+    .side-nav-bar .side-bar-button .side-bar-icon {
+      width: 41px;
+      height: 30px;
+      margin: auto; }
+    .side-nav-bar .side-bar-button .side-bar-text {
+      color: #ffffff;
+      text-align: center;
+      font-size: 12px;
+      padding-top: 5px; }
+  .side-nav-bar .active {
+    padding: 20% 0;
+    background-color: #dcdfe8; }
+    .side-nav-bar .active .side-bar-text {
+      color: #006099; }
+    .side-nav-bar .active .side-bar-icon-clinic {
+      background: url(../images/orgicon/ico-1.png) center center no-repeat; }
+    .side-nav-bar .active .side-bar-icon-patient-info {
+      background: url(../images/orgicon/ico-2.png) center center no-repeat; }
+    .side-nav-bar .active .side-bar-icon-inquiry {
+      background: url(../images/orgicon/ico-3.png) center center no-repeat; }
+    .side-nav-bar .active .side-bar-icon-physical-check {
+      background: url(../images/orgicon/ico-4.png) center center no-repeat; }
+    .side-nav-bar .active .side-bar-icon-medical-check {
+      background: url(../images/orgicon/ico-5.png) center center no-repeat; }
+    .side-nav-bar .active .side-bar-icon-initial-diagnosis {
+      background: url(../images/orgicon/ico-6.png) center center no-repeat; }
+    .side-nav-bar .active .side-bar-icon-summary {
+      background: url(../images/orgicon/ico-7.png) center center no-repeat; }
+    .side-nav-bar .active .side-bar-icon-final-diagnosis {
+      background: url(../images/orgicon/ico-8.png) center center no-repeat; }
+    .side-nav-bar .active .side-bar-icon-treatment {
+      background: url(../images/orgicon/ico-9.png) center center no-repeat; }
+  .side-nav-bar .clickable {
+    padding: 20% 0;
+    border-bottom: 1px solid #004b78;
+    background-color: #025485; }
+  .side-nav-bar .side-bar-icon-clinic {
+    background: url(../images/orgicon/ico1.png) center center no-repeat; }
+  .side-nav-bar .side-bar-icon-patient-info {
+    background: url(../images/orgicon/ico2.png) center center no-repeat; }
+  .side-nav-bar .side-bar-icon-inquiry {
+    background: url(../images/orgicon/ico3.png) center center no-repeat; }
+  .side-nav-bar .side-bar-icon-physical-check {
+    background: url(../images/orgicon/ico4.png) center center no-repeat; }
+  .side-nav-bar .side-bar-icon-medical-check {
+    background: url(../images/orgicon/ico5.png) center center no-repeat; }
+  .side-nav-bar .side-bar-icon-initial-diagnosis {
+    background: url(../images/orgicon/ico6.png) center center no-repeat; }
+  .side-nav-bar .side-bar-icon-summary {
+    background: url(../images/orgicon/ico7.png) center center no-repeat; }
+  .side-nav-bar .side-bar-icon-final-diagnosis {
+    background: url(../images/orgicon/ico8.png) center center no-repeat; }
+  .side-nav-bar .side-bar-icon-treatment {
+    background: url(../images/orgicon/ico9.png) center center no-repeat; }
+
+nav .nav-time {
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  background: url(../images/ico12-top.png) center center no-repeat;
+  position: relative; }
+nav .navbar-btn.navbar-right {
+  margin-right: 15px; }
+
+.navbar-default .glyphicon {
+  color: #fff;
+  margin-right: 15px; }
+.navbar-default .navbar-timer {
+  width: 100%;
+  text-align: center; }
+
+.main-container {
+  height: 100%;
+  padding-bottom: 50px; }
+
+/** 
+ ** 诊室相关CSS
+ */
+.clinic-container {
+  height: 100%; }
+
+.clinic-side-nav-bar {
+  height: 100%;
+  background-color: #2F3A4C; }
+  .clinic-side-nav-bar .side-bar-button {
+    padding: 17% 0; }
+    .clinic-side-nav-bar .side-bar-button.active {
+      background-color: #dcdfe8; }
+      .clinic-side-nav-bar .side-bar-button.active .side-bar-text a {
+        color: #006099; }
+    .clinic-side-nav-bar .side-bar-button .side-bar-text {
+      color: #ffffff;
+      text-align: center;
+      font-size: 12px;
+      padding-top: 5px; }
+  .clinic-side-nav-bar a {
+    color: #fff;
+    text-decoration: none; }
+
+.medical-case-list {
+  list-style: none;
+  padding-left: 0px; }
+  .medical-case-list li {
+    padding: 0px;
+    float: left;
+    width: 25%;
+    padding-right: 15px; }
+  .medical-case-list .panel:hover {
+    border-color: #2e6da4;
+    cursor: pointer; }
+  .medical-case-list dl {
+    margin-bottom: 0px; }
+  .medical-case-list .panel-heading {
+    color: #01466f;
+    font-size: 16px; }
+
+.panel-diagnosis {
+  margin: 0px 0px; }
+  .panel-diagnosis li {
+    border: none;
+    line-height: 32px; }
+    .panel-diagnosis li .panel-diagnosis-basis {
+      font-size: 12px;
+      line-height: 22px;
+      text-align: center; }
+    .panel-diagnosis li .panel-diagnosis-option input {
+      margin-left: 5px; }
+    .panel-diagnosis li input {
+      margin-right: 5px; }
+    .panel-diagnosis li label {
+      font-size: 13px; }
+  .panel-diagnosis .btn-group:first-child {
+    margin-left: 15px; }
+
+.diagnosis-basis-modal .modal-body {
+  max-height: 500px;
+  overflow: auto; }
+.diagnosis-basis-modal .page-header {
+  margin-top: 10px;
+  margin-bottom: 10px; }
+
+.final-diagnosis-container {
+  padding-top: 10px;
+  padding-bottom: 10px; }
+
+.score-tree-container {
+  height: 100%;
+  overflow: auto; }
+  .score-tree-container .panel-score-container {
+    position: relative; }
+  .score-tree-container .panel-score {
+    margin: 10px 0px;
+    position: relative; }
+    .score-tree-container .panel-score:before {
+      content: "";
+      display: block;
+      position: absolute;
+      z-index: 1;
+      left: 0px;
+      top: 0;
+      bottom: 0;
+      border: 1px dotted;
+      border-width: 0 0 0 1px; }
+    .score-tree-container .panel-score .panel-heading {
+      color: #01466f;
+      font-size: 16px;
+      border-bottom: 1px solid #0068a5; }
+      .score-tree-container .panel-score .panel-heading:before {
+        content: "";
+        display: block;
+        width: 7px;
+        position: absolute;
+        z-index: 1;
+        left: 5px;
+        top: 17px;
+        border: 1px dotted;
+        border-width: 1px 0 0; }
+    .score-tree-container .panel-score a {
+      text-decoration: none; }
+    .score-tree-container .panel-score .panel-collapse {
+      position: relative; }
+    .score-tree-container .panel-score .list-group:before {
+      content: "";
+      display: block;
+      position: absolute;
+      z-index: 1;
+      left: 18px;
+      top: 0;
+      bottom: 0;
+      border: 1px dotted;
+      border-width: 0 0 0 1px; }
+    .score-tree-container .panel-score .list-group .list-group-item {
+      padding-left: 50px; }
+      .score-tree-container .panel-score .list-group .list-group-item:before {
+        content: "";
+        display: block;
+        width: 7px;
+        position: absolute;
+        z-index: 1;
+        left: 20px;
+        top: 17px;
+        border: 1px dotted;
+        border-width: 1px 0 0; }
+
+.panel-score-medical-case {
+  margin: 10px 0px; }
+  .panel-score-medical-case .panel-body {
+    padding-bottom: 0px; }
+  .panel-score-medical-case .sub-score .score-title, .panel-score-medical-case .main-score .score-title {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0; }
+  .panel-score-medical-case .sub-score .score-block, .panel-score-medical-case .main-score .score-block {
+    border: 4px solid #ddd;
+    border-radius: 5px;
+    font-size: 36px;
+    text-align: center; }
+  .panel-score-medical-case .main-score {
+    margin-bottom: 15px; }
+    .panel-score-medical-case .main-score .score-block {
+      border: 4px solid #0068a5;
+      color: #0068a5; }
+      .panel-score-medical-case .main-score .score-block b {
+        color: #0068a5; }
+
+html, body {
+  height: 100%; }
+
+body {
+  min-height: 100%;
+  padding-bottom: 52px; }
+
+.head-row {
+  margin-top: 15px; }
+
+.btn-default {
+  color: #2e6da4;
+  border-color: #2e6da4; }
+  .btn-default:hover {
+    color: #fff;
+    background-color: #2e6da4;
+    border-color: #2e6da4; }
+  .btn-default:active, .btn-default.active {
+    color: #fff;
+    background-color: #2e6da4;
+    border-color: #2e6da4; }
+    .btn-default:active:hover, .btn-default:active:focus, .btn-default:active.focus, .btn-default.active:hover, .btn-default.active:focus, .btn-default.active.focus {
+      color: #fff;
+      background-color: #2e6da4; }
+
+.btn-app-default {
+  color: #2e6da4;
+  border-color: #2e6da4; }
+
+.panel-default .panel-heading {
+  color: #01466f;
+  font-size: 16px; }
+  .panel-default .panel-heading .form-inline {
+    position: absolute;
+    top: 4px;
+    right: 5px; }
+
+.panel-full-height, .panel-diagnosis, .question-panel, .answer-panel {
+  height: 100%; }
+  .panel-full-height .panel-heading, .panel-diagnosis .panel-heading, .question-panel .panel-heading, .answer-panel .panel-heading {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: 16px;
+    margin-right: 16px; }
+  .panel-full-height .panel-body, .panel-diagnosis .panel-body, .question-panel .panel-body, .answer-panel .panel-body {
+    height: 100%;
+    padding-top: 43px; }
+  .panel-full-height > .list-group, .panel-diagnosis > .list-group, .question-panel > .list-group, .answer-panel > .list-group, .panel-full-height > .panel-collapse > .list-group, .panel-diagnosis > .panel-collapse > .list-group, .question-panel > .panel-collapse > .list-group, .answer-panel > .panel-collapse > .list-group {
+    height: 100%;
+    padding-top: 43px; }
+
+.question-panel-container {
+  height: 100%;
+  padding-bottom: 255px; }
+
+.question-panel {
+  margin: 10px 0px; }
+  .question-panel .qusetion-category-list {
+    text-align: center;
+    margin-bottom: 0px;
+    overflow: auto; }
+    .question-panel .qusetion-category-list .list-group-item {
+      padding: 5px 5px;
+      border-left: none; }
+      .question-panel .qusetion-category-list .list-group-item.active, .question-panel .qusetion-category-list .list-group-item:active {
+        background-color: #025485;
+        border-color: #ddd; }
+        .question-panel .qusetion-category-list .list-group-item.active a, .question-panel .qusetion-category-list .list-group-item:active a {
+          color: #fff; }
+      .question-panel .qusetion-category-list .list-group-item:first-child {
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-top: none; }
+      .question-panel .qusetion-category-list .list-group-item:last-child {
+        border-bottom-left-radius: 0px; }
+  .question-panel .question-list {
+    overflow: auto;
+    height: 100%;
+    padding-left: 0px; }
+    .question-panel .question-list .question-item {
+      margin: 10px 0px;
+      padding-left: 15px; }
+      .question-panel .question-list .question-item:hover {
+        background-color: #f5f5f5;
+        cursor: pointer; }
+    .question-panel .question-list .glyphicon {
+      margin-right: 10px; }
+  .question-panel .panel-body {
+    padding-left: 0px;
+    padding-bottom: 0px; }
+  .question-panel a {
+    color: #666; }
+    .question-panel a:hover {
+      text-decoration: none; }
+  .question-panel p {
+    margin-top: 75px; }
+
+.answer-panel-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+  z-index: 1030;
+  height: 238px; }
+
+.answer-panel {
+  height: 218px;
+  margin: 10px 0px; }
+  .answer-panel .media {
+    margin-top: 0px; }
+    .answer-panel .media .media-body {
+      vertical-align: middle; }
+    .answer-panel .media .media-body-right {
+      text-align: right; }
+  .answer-panel .answer-item {
+    padding: 5px;
+    border-bottom: 1px solid #ddd; }
+    .answer-panel .answer-item:last-child {
+      border-color: transparent; }
+    .answer-panel .answer-item:hover, .answer-panel .answer-item:active, .answer-panel .answer-item.active {
+      cursor: pointer;
+      background-color: #f5f5f5; }
+  .answer-panel .panel-body {
+    overflow: auto; }
+
+.answer-comment-panel {
+  min-height: 200px;
+  margin: 10px 0px; }
+
+.guide-image-row {
+  margin-top: 20px;
+  margin-bottom: 40px; }
+
+.summary-container {
+  overflow: auto; }
+
+/*# sourceMappingURL=main.css.map */
+

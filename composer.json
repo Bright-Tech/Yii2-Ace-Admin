@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BrightTech\\Yii2-Ace-Admin-Theme\\": ""
+            "bright\\yii2aceadmin\\": ""
         }
     }
 }

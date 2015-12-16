@@ -10,13 +10,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist samxiao/yii2-ace-admin "*"
+php composer.phar require --prefer-dist bright-tech/yii2-ace-admin-theme "*"
 ```
 
 or add
 
 ```
-"samxiao/yii2-ace-admin": "*"
+"bright-tech/yii2-ace-admin-theme": "*"
 ```
 
 to the require section of your `composer.json` file.

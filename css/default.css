@@ -1,0 +1,26 @@
+@CHARSET "UTF-8";
+.button-row, .search-row{
+	margin-bottom: 12px;
+}
+
+.show-as-pointer{
+	cursor: pointer;
+	color: #337ab7;
+}
+
+.tree-view-col{
+	height: 100%;
+	overflow: auto;
+}
+
+.score-table{
+	
+}
+.score-table td{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.col-id{
+	width: 50px;
+	text-align: center;
+}
