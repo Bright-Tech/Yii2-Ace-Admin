@@ -1,0 +1,21 @@
+{
+    "name": "BrightTech/Yii2-Ace-Admin-Theme",
+    "description": "为Yii2 开发的 Ace-Admin主题组件库",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension","ace-admin"],
+    "license": "GNU GENERAL PUBLIC LICENSE",
+    "authors": [
+        {
+            "name": "BrightTech",
+            "email": "xiao.yanqi@bright-tech.cn"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "BrightTech\\Yii2-Ace-Admin-Theme\\": ""
+        }
+    }
+}
