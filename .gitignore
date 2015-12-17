@@ -2,3 +2,5 @@
 .buildpath
 .settings
 .DS_Store
+vendor
+composer.lock
