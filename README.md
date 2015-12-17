@@ -28,4 +28,4 @@ Usage
 Once the extension is installed, simply use it in your code by  :
 
 ```php
-<?= \samxiao\aceadmin\AutoloadExample::widget(); ?>```
+<?= \bright\theme\yii2\aceadmin::widget(); ?>```
