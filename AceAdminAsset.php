@@ -16,37 +16,32 @@ use yii\web\AssetBundle;
 class AceAdminAsset extends AssetBundle
 {
 
-    public $basePath = '@webroot';
-
-    public $baseUrl = '@web';
-    // 'lt IE 9' => [
-    // '/css/ace-part2.css',
-    // '/css/ace-ie.css'
-    // ]
+    public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/assets';
+    
     public $jsOptions = [
         'position' => \yii\web\View::POS_HEAD
     ];
-
+    
     public $css = [
-        'assets/css/font-awesome.css',
-        'assets/css/ace-fonts.css',
-        'assets/css/ace.css',
+        'css/font-awesome.css',
+        'css/ace-fonts.css',
+        'css/ace.css',
     ];
-
+    
     public $js = [
-        'assets/js/fuelux/fuelux.tree.js',
-        'assets/js/ace/elements.scroller.js',
-        'assets/js/ace/elements.colorpicker.js',
-        'assets/js/ace/elements.fileinput.js',
-        'assets/js/ace/elements.typeahead.js',
-        'assets/js/ace/elements.wysiwyg.js',
-        'assets/js/ace/elements.spinner.js',
-        'assets/js/ace/elements.treeview.js',
-        'assets/js/ace/elements.aside.js',
-        'assets/js/ace/ace.js',
-        'assets/js/ace/ace.sidebar.js',
-        'assets/js/ace/ace.sidebar-scroll-1.js',
-        'assets/js/json2.js',
+        'js/fuelux/fuelux.tree.js',
+        'js/ace/elements.scroller.js',
+        'js/ace/elements.colorpicker.js',
+        'js/ace/elements.fileinput.js',
+        'js/ace/elements.typeahead.js',
+        'js/ace/elements.wysiwyg.js',
+        'js/ace/elements.spinner.js',
+        'js/ace/elements.treeview.js',
+        'js/ace/elements.aside.js',
+        'js/ace/ace.js',
+        'js/ace/ace.sidebar.js',
+        'js/ace/ace.sidebar-scroll-1.js',
+        'js/json2.js',
     ];
 
     public $depends = [

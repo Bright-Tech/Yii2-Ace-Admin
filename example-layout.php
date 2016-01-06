@@ -3,6 +3,7 @@ use backend\assets\AppAsset;
 use yii\helpers\Html;
 use backend\aceadmin\widgets\Breadcrumbs;
 use yii\helpers\Url;
+use bright\theme\yii2\aceadmin\AceAdminAsset;
 //use yii\bootstrap\Nav;
 //use yii\bootstrap\NavBar;
 //use yii\widgets\Breadcrumbs;
@@ -11,6 +12,7 @@ use yii\helpers\Url;
 /* @var $content string */
 
 AppAsset::register($this);
+AceAdminAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -20,20 +22,6 @@ AppAsset::register($this);
 <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
-
-
-<!-- page specific plugin styles -->
-
-
-<!-- ace settings handler -->
-<script src="<?=Url::base()?>/js/ace-extra.js"></script>
-
-<!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
-
-<!--[if lte IE 8]>
-	<script src="/js/html5shiv.js"></script>
-	<script src="/js/respond.js"></script>
-	<![endif]-->
     <?php $this->head() ?>
 </head>
 <body class="no-skin">
