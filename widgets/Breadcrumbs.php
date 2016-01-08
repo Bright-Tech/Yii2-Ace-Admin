@@ -1,10 +1,8 @@
 <?php
-namespace backend\aceadmin\widgets;
+namespace bright\theme\yii2\aceadmin\widgets;
 
-use yii\base\Widget;
+
 use yii\helpers\Html;
-use yii\helpers\Url;
-
 /**
  * <div class="breadcrumbs" id="breadcrumbs">
  * <ul class="breadcrumb">
@@ -27,6 +25,32 @@ use yii\helpers\Url;
  */
 class Breadcrumbs extends \yii\widgets\Breadcrumbs
 {
+    public $homeTemplate = "<li><i class=\"ace-icon fa fa-home home-icon\"></i>{link}</li>\n";
+    
+    public function run(){
+        if (empty($this->links)) {
+            return;
+        }
+        $links = [];
+        if ($this->homeLink === null) {
+            $links[] = $this->renderItem([
+                'label' => \Yii::t('yii', 'Home'),
+                'url' => \Yii::$app->homeUrl,
+            ], $this->homeTemplate);
+        } elseif ($this->homeLink !== false) {
+            $links[] = $this->renderItem($this->homeLink, $this->homeTemplate);
+        }
+        foreach ($this->links as $link) {
+            if (!is_array($link)) {
+                $link = ['label' => $link];
+            }
+            $links[] = $this->renderItem($link, isset($link['url']) ? $this->itemTemplate : $this->activeItemTemplate);
+        }
+        $ulHtml = Html::tag($this->tag, implode('', $links), $this->options);
+        
+        return Html::tag('div', $ulHtml, ['class'=>'breadcrumbs']);
+    }
+    
 
 }
 
