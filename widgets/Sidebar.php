@@ -1,8 +1,10 @@
 <?php
-namespace backend\aceadmin\widgets;
+namespace bright\theme\yii2\aceadmin\widgets;
 
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
+use bright\theme\yii2\aceadmin\AceAdminAsset;
+use yii\helpers\ArrayHelper;
 
 
 /**
@@ -39,99 +41,144 @@ use yii\bootstrap\Nav;
  */
 class Sidebar extends Nav
 {
-
-//     public $currentItem;
-
-//     public $menuItems;
-
-//     public $shortcutItems;
-
+    public $warpClass = 'nav nav-list';
+    
+    public $iconClass = 'menu-icon';
+    
+    public $defaultDropDownBTagOptions = [ 'class' => 'arrow fa fa-angle-down' ];
+    // public $currentItem;
+    
+    // public $menuItems;
+    
+    // public $shortcutItems;
+    
+    /**
+     * Initializes the widget.
+     */
     public function init()
     {
         parent::init();
-
+        Html::removeCssClass($this->options, ['widget' => 'nav']);
+        Html::addCssClass($this->options, [
+            'navlist' => $this->warpClass
+        ]);
     }
 
-//     public function run()
-//     {
-//        // $this->setMenuItems($menuItems);
-//        // $this->setCurrentItem($currentItem);
-//         $content = $this->renderNavList();
+    public function run()
+    {
+        AceAdminAsset::register($this->getView());
+        return $this->renderItems();
+    }
 
-//         return '<ul class="nav nav-list">' . $content . '</ul>';
-//     }
+    /**
+     * Renders a widget's item.
+     *
+     * @param string|array $item
+     *            the item to render.
+     * @return string the rendering result.
+     * @throws InvalidConfigException
+     */
+    public function renderItem($item)
+    {
+        if (is_string($item)) {
+            return $item;
+        }
+        if (! isset($item['label'])) {
+            throw new InvalidConfigException("The 'label' option is required.");
+        }
+        $options = ArrayHelper::getValue($item, 'options', []);
+        $items = ArrayHelper::getValue($item, 'items');
+        
+        if (isset($item['active'])) {
+            $active = ArrayHelper::remove($item, 'active', false);
+        } else {
+            $active = $this->isItemActive($item);
+        }
+        
+        if ($items !== null) {
 
-//     public function renderNavList()
-//     {
-//         $html = '';
-//         $menuItems = $this->menuItems;
-//         foreach ($menuItems as $menuItem) {
-//             if (isset($menuItem['submenu'])) {
-//                 $html .= $this->renderMenuItemWithSubmenu($menuItem);
-//             } else {
-//                 $html .= $this->renderMenuItem($menuItem);
-//             }
-//         }
+            $item['linkOptions'] = [ 'class' => 'dropdown-toggle' ];
+            
+            if (is_array($items)) {
+                if ($this->activateItems) {
+                    $items = $this->isChildActive($items, $active);
+                }
+                $items = $this->renderSubItems($items, $item);
+            }
+        }
+        
+        if ($this->activateItems && $active) {
+            Html::addCssClass($options, 'active');
+        }
+       
+        $linkHtml = $this->renderItemLink( $item );
+        $arrowHtml = Html::tag('b', '' , ['class'=>'arrow']);
+        
+        return Html::tag('li', $linkHtml . $arrowHtml  . $items, $options);
+    }
+    
+    /**
+     *
+     * @param unknown $item
+     */
+    protected function renderItemLink( $item ){
+        $url = ArrayHelper::getValue($item, 'url', '#');
+        $linkOptions = ArrayHelper::getValue($item, 'linkOptions', []);
+        $encodeLabel =  ArrayHelper::getValue($item , 'encode', $this->encodeLabels ) ;
+        $label = $encodeLabel ? Html::encode($item['label']) : $item['label'];
+        $items = ArrayHelper::getValue($item, 'items');
+        
+        $bTagHtml = '';
+        if ($items !== null) {
+            $bTagHtml = Html::tag('b', '' , $this->defaultDropDownBTagOptions);
+        }
+        
+        $iconHtml = $this->renderItemIcon($item);
+        $label = Html::tag('span', $label , ['class'=>'menu-text']);
+        return Html::a( $iconHtml . $label . $bTagHtml, $url, $linkOptions);
+        
+    }
+    
+    /**
+     *
+     * @param unknown $item  一级节点
+     */
+    protected function renderItemIcon( $item ){
+        $iconClass = ArrayHelper::getValue($item, 'icon');
+        if ($iconClass !== null ){
+            $class = [$this->iconClass];
+            Html::addCssClass($class, $iconClass);
+            return Html::tag('i', '', ['class'=>$class]);
+        }else{
+            return '';
+        }
+    }
+    
+    /**
+     *
+     * @param unknown $items 节点数组
+     * @param unknown $item 上级节点
+     */
+    protected function renderSubItems( $items, $item ){
+        $subItems = [];
+        foreach ($items as $i => $subItem) {
+            if (isset($subItem['visible']) && !$subItem['visible']) {
+                continue;
+            }
+            $subItem['icon'] = 'fa fa-caret-right';
+            $linkHtml = $this->renderItemLink($subItem);
 
-//         return $html;
+            $leafItems = ArrayHelper::getValue($subItem, 'items');
+            $leafItemsHtml = '';
+            if ($leafItems !== null) {
+                $leafItemsHtml = $this->renderSubItems($leafItems, $subItem);
+            }
+            
+            $subItems[] =   Html::tag('li', $linkHtml.$leafItemsHtml , []);
+        }
+        
+        return Html::tag('ul', implode("\n", $subItems), ['class'=>'submenu']);
+    }
 
-//         // $markup = sprintf($this->getMessageOpenFormat(), ' class="' . implode(' ', $classes) . '"');
-//     }
-
-//     public function renderMenuItem($menuItem, $subMenu = FALSE)
-//     {
-//         $currentItem = $this->currentItem;
-//         //$escapeHtml = $this->getEscapeHtml();
-//         $liClass = '';
-//         if ($currentItem == $menuItem['title']) {
-//             $liClass = 'active';
-//         }
-//         $html = '<li class="' . $liClass . '">
-//                     <a href="' . $menuItem['url'] . '">';
-//         $menuTitle = Html::encode($menuItem['title']);
-//         if ($subMenu) {
-//             $html .= '<i class="menu-icon fa fa-caret-right"></i>'. $menuTitle;
-//         } else {
-//             if (isset($menuItem['icon'])){
-//                 $html .='<i class="' . $menuItem['icon'] . '"></i>';
-//             }
-//             $html .= '<span class="menu-text">' . $menuTitle . '</span>';
-//         }
-
-//         $html .= '</a>
-//                     <b class="arrow"></b>
-//                 </li>';
-//         return $html;
-//     }
-
-//     public function renderMenuItemWithSubmenu($menuItem)
-//     {
-//         $currentItem = $this->currentItem;
-//         $subItems = $menuItem['submenu'];
-//         $liClass = '';
-//         $subNavHtml = '';
-//         foreach ($subItems as $subMenuItem) {
-//             if ($currentItem == $subMenuItem['title']) {
-//                 $liClass = 'active open';
-//             }
-//             $subNavHtml .= $this->renderMenuItem($subMenuItem,true);
-//         }
-
-//         $menuTitle = Html::encode($menuItem['title']);
-//         $html = '<li class="' . $liClass . '">
-//                     <a href="#" class="dropdown-toggle">
-//                         <i class=""></i>
-//                         <span class="menu-text">
-//                             ' . $menuTitle . '
-//                         </span>
-
-//                         <b class="arrow fa fa-angle-down"></b>
-//                     </a>
-//                     <b class="arrow"></b>
-//                     <ul class="submenu">';
-//         $html .= $subNavHtml;
-//         $html .= '</ul></li>';
-//         return $html;
-//     }
 }
 

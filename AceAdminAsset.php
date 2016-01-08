@@ -1,8 +1,6 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @author Sam Xiao
  */
 namespace bright\theme\yii2\aceadmin;
 
@@ -46,6 +44,6 @@ class AceAdminAsset extends AssetBundle
 
     public $depends = [
         'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset'
+        'bright\theme\yii2\aceadmin\BootstrapAsset'
     ];
 }
