@@ -13,7 +13,7 @@ use yii\web\AssetBundle;
  * @author
  * @since
  */
-class AceAdminAsset extends AssetBundle
+class AceAdminWizardAsset extends AssetBundle
 {
 
     public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/assets';

@@ -13,7 +13,7 @@ class BootstrapAsset extends \yii\bootstrap\BootstrapAsset
 {
 
     public $js = [
-        YII_ENV_DEV ? 'js/bootstrap.js' : 'js/bootstrap.min.js'
+        'js/bootstrap.min.js'
     ];
     
 }
