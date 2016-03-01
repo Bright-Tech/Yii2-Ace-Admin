@@ -1,5 +1,5 @@
 <?php
-namespace backend\aceadmin\widgets;
+namespace bright\theme\yii2\aceadmin\widgets;
 
 use yii\base\Widget;
 use yii\helpers\Html;

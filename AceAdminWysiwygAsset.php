@@ -13,14 +13,20 @@ use yii\web\AssetBundle;
  * @author
  * @since
  */
-class AceAdminWizardAsset extends AssetBundle
+class AceAdminWysiwygAsset extends AssetBundle
 {
 
     public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/assets';
     
+    public $jsOptions = [
+        'position' => \yii\web\View::POS_HEAD
+    ];
+    
+    
     public $js = [
-        'js/fuelux/fuelux.wizard.js',
-        'js/ace/elements.wizard.js',
+        'js/jquery.hotkeys.js',
+        'js/bootstrap-wysiwyg.js',
+        'js/ace/elements.wysiwyg.js'
     ];
 
     public $depends = [

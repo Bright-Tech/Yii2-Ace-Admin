@@ -28,11 +28,11 @@ class AceAdminAsset extends AssetBundle
     
     public $js = [
         'js/fuelux/fuelux.tree.js',
+        'js/fuelux/fuelux.spinner.js',
         'js/ace/elements.scroller.js',
         'js/ace/elements.colorpicker.js',
         'js/ace/elements.fileinput.js',
         'js/ace/elements.typeahead.js',
-        'js/ace/elements.wysiwyg.js',
         'js/ace/elements.spinner.js',
         'js/ace/elements.treeview.js',
         'js/ace/elements.aside.js',
