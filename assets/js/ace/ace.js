@@ -2,6 +2,13 @@
  Required. Ace's Basic File to Initiliaze Different Parts and Some Variables.
 */
 
+//document ready function
+jQuery(function($) {
+  try {
+	ace.demo.init();
+  } catch(e) {}
+});
+
 
 //some basic variables
 (function(undefined) {
@@ -27,50 +34,41 @@
 	ace.vars['firefox'] = 'MozAppearance' in document.documentElement.style;
 	
 	ace.vars['non_auto_fixed'] = ace.vars['android'] || ace.vars['ios_safari'];
+	
+	
+	//sometimes we try to use 'tap' event instead of 'click' if jquery mobile plugin is available
+	ace['click_event'] = ace.vars['touch'] && jQuery.fn.tap ? 'tap' : 'click';
 })();
 
 
 
 (function($ , undefined) {
-	//sometimes we try to use 'tap' event instead of 'click' if jquery mobile plugin is available
-	ace['click_event'] = ace.vars['touch'] && $.fn.tap ? 'tap' : 'click';
-})(jQuery);
+
+	ace.demo = {
+		functions: {},
+		
+		init: function(initAnyway) {
+			//initAnyway used to make sure the call is from our RequireJS app and not a document ready event!
+			var initAnyway = !!initAnyway && true;
+			if(typeof requirejs !== "undefined" && !initAnyway) return;
+			
+			for(var func in ace.demo.functions) if(ace.demo.functions.hasOwnProperty(func)) {
+				ace.demo.functions[func]();
+			}
+		}
+	}
 
 
-
-
-//document ready function
-jQuery(function($) {
-	basics();
-	enableSidebar();
-	
-	enableDemoAjax();
-	handleScrollbars();
-	
-	dropdownAutoPos();
-	
-	navbarHelpers();
-	sidebarTooltips();
-	
-	scrollTopBtn();
-	
-	someBrowserFix();
-	
-	bsCollapseToggle();
-	smallDeviceDropdowns();
-	
-	////////////////////////////
-
-	function basics() {
+	ace.demo.functions.basics = function() {
 		// for android and ios we don't use "top:auto" when breadcrumbs is fixed
 		if(ace.vars['non_auto_fixed']) {
 			$('body').addClass('mob-safari');
 		}
 
-		ace.vars['transition'] = !!$.support.transition.end
+		ace.vars['transition'] = ace.vars['animation'] || !!$.support.transition;
 	}
 	
-	function enableSidebar() {
+	ace.demo.functions.enableSidebar = function() {
 		//initiate sidebar function
 		var $sidebar = $('.sidebar');
 		if($.fn.ace_sidebar) $sidebar.ace_sidebar();
@@ -86,7 +84,7 @@ jQuery(function($) {
 
 	
 	//Load content via ajax
-	function enableDemoAjax() {		
+	ace.demo.functions.enableDemoAjax = function() {
 		if(!$.fn.ace_ajax) return;
  
 		if(window.Pace) {
@@ -100,6 +98,9 @@ jQuery(function($) {
 
 		var demo_ajax_options = {
 			 'close_active': true,
+			 
+			 close_mobile_menu: '#sidebar',
+			 close_dropdowns: true,
 			 
 			 'default_url': 'page/index',//default hash
 			 'content_url': function(hash) {
@@ -142,7 +143,7 @@ jQuery(function($) {
 
 	/////////////////////////////
 
-	function handleScrollbars() {
+	ace.demo.functions.handleScrollbars = function() {
 		//add scrollbars for navbar dropdowns
 		var has_scroll = !!$.fn.ace_scroll;
 		if(has_scroll) $('.dropdown-content').ace_scroll({reset: false, mouseWheelLock: true})
@@ -159,7 +160,7 @@ jQuery(function($) {
 	}
 
 
-	function dropdownAutoPos() {
+	ace.demo.functions.dropdownAutoPos = function() {
 		//change a dropdown to "dropup" depending on its position
 		$(document).on('click.dropdown.pos', '.dropdown-toggle[data-position="auto"]', function() {
 			var offset = $(this).offset();
@@ -174,7 +175,7 @@ jQuery(function($) {
 	}
 
 	
-	function navbarHelpers() {
+	ace.demo.functions.navbarHelpers = function() {
 		//prevent dropdowns from hiding when a from is clicked
 		/**$(document).on('click', '.dropdown-navbar form', function(e){
 			e.stopPropagation();
@@ -203,7 +204,7 @@ jQuery(function($) {
 	}
 
 	
-	function sidebarTooltips() {
+	ace.demo.functions.sidebarTooltips = function() {
 		//tooltip in sidebar items
 		$('.sidebar .nav-list .badge[title],.sidebar .nav-list .badge[title]').each(function() {
 			var tooltip_class = $(this).attr('class').match(/tooltip\-(?:\w+)/);
@@ -238,7 +239,7 @@ jQuery(function($) {
 	
 	
 
-	function scrollTopBtn() {
+	ace.demo.functions.scrollTopBtn = function() {
 		//the scroll to top button
 		var scroll_btn = $('.btn-scroll-up');
 		if(scroll_btn.length > 0) {
@@ -270,7 +271,7 @@ jQuery(function($) {
 
 
 	
-	function someBrowserFix() {
+	ace.demo.functions.someBrowserFix = function() {
 		//chrome and webkit have a problem here when resizing from 479px to more
 		//we should force them redraw the navbar!
 		if( ace.vars['webkit'] ) {
@@ -303,7 +304,7 @@ jQuery(function($) {
 
 	
 	
-	function bsCollapseToggle() {
+	ace.demo.functions.bsCollapseToggle = function() {
 		//bootstrap collapse component icon toggle
 		$(document).on('hide.bs.collapse show.bs.collapse', function (ev) {
 			var panel_id = ev.target.getAttribute('id')
@@ -339,14 +340,18 @@ jQuery(function($) {
 
 	
 	//in small devices display navbar dropdowns like modal boxes
-	function smallDeviceDropdowns() {
+	ace.demo.functions.smallDeviceDropdowns = function() {
 	  if(ace.vars['old_ie']) return;
 	  
-	  $('.ace-nav > li')
-	  .on('shown.bs.dropdown.navbar', function(e) {
+	  $(document)
+	  .on('shown.bs.dropdown.navbar', '.ace-nav > li.dropdown-modal', function(e) {
 		adjustNavbarDropdown.call(this);
+		var self = this;
+		$(window).on('resize.navbar.dropdown', function() {
+			adjustNavbarDropdown.call(self);
+		})
 	  })
-	  .on('hidden.bs.dropdown.navbar', function(e) {
+	  .on('hidden.bs.dropdown.navbar', '.ace-nav > li.dropdown-modal', function(e) {
 		$(window).off('resize.navbar.dropdown');
 		resetNavbarDropdown.call(this);
 	  })
@@ -430,13 +435,6 @@ jQuery(function($) {
 		else {
 			if($sub.length != 0) resetNavbarDropdown.call(this, $sub);
 		}
-		
-		var self = this;
-		$(window)
-		.off('resize.navbar.dropdown')
-		.one('resize.navbar.dropdown', function() {
-			$(self).triggerHandler('shown.bs.dropdown.navbar');
-		})
 	  }
 
 	  //reset scrollbars and user menu
@@ -466,10 +464,7 @@ jQuery(function($) {
 	  }
 	}
 
-});//jQuery document ready
-
-
-
+})(jQuery);
 
 
 //some ace helper functions
@@ -494,7 +489,8 @@ jQuery(function($) {
 
 	return val;
  }
- $$.getAttrSettings = function(el, attr_list, prefix) {
+ $$.getAttrSettings = function(elem, attr_list, prefix) {
+	if(!elem) return;
 	var list_type = attr_list instanceof Array ? 1 : 2;
 	//attr_list can be Array or Object(key/value)
 	var prefix = prefix ? prefix.replace(/([^\-])$/ , '$1-') : '';
@@ -505,7 +501,7 @@ jQuery(function($) {
 		var name = list_type == 1 ? attr_list[li] : li;
 		var attr_val, attr_name = $$.unCamelCase(name.replace(/[^A-Za-z0-9]{1,}/g , '-')).toLowerCase()
 
-		if( ! ((attr_val = el.getAttribute(prefix + attr_name))  ) ) continue;
+		if( ! ((attr_val = elem.getAttribute(prefix + attr_name))  ) ) continue;
 		settings[name] = $$.strToVal(attr_val);
 	}
 
@@ -519,6 +515,7 @@ jQuery(function($) {
 	return window.innerHeight || document.documentElement.clientHeight;
  }
  $$.redraw = function(elem, force) {
+	if(!elem) return;
 	var saved_val = elem.style['display'];
 	elem.style.display = 'none';
 	elem.offsetHeight;

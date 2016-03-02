@@ -16,7 +16,7 @@ Please refer to documentation for more info.
  
  //>>> you should hard code changes inside HTML for RTL direction
  //you shouldn't use this function to switch direction
- //this is only for dynamically switching for demonstration
+ //this is only for dynamically switching for Ace's demo
  //take a look at this function to see what changes should be made
  //also take a look at docs for some tips
  var switch_direction = function() {

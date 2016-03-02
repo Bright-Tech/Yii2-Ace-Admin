@@ -28,14 +28,14 @@
    * @param {Object} event A touch event
    * @param {String} simulatedType The corresponding mouse event
    */
-  function simulateMouseEvent (event, simulatedType, prevent) {
+  function simulateMouseEvent (event, simulatedType) {
 
     // Ignore multi-touch events
     if (event.originalEvent.touches.length > 1) {
       return;
     }
 
-    if(prevent !== false) event.preventDefault();//ACE
+    event.preventDefault();
 
     var touch = event.originalEvent.changedTouches[0],
         simulatedEvent = document.createEvent('MouseEvents');
@@ -83,13 +83,13 @@
     self._touchMoved = false;
 
     // Simulate the mouseover event
-    simulateMouseEvent(event, 'mouseover', false);//ACE
+    simulateMouseEvent(event, 'mouseover');
 
     // Simulate the mousemove event
-    simulateMouseEvent(event, 'mousemove', false);//ACE
+    simulateMouseEvent(event, 'mousemove');
 
     // Simulate the mousedown event
-    simulateMouseEvent(event, 'mousedown', false);//ACE
+    simulateMouseEvent(event, 'mousedown');
   };
 
   /**

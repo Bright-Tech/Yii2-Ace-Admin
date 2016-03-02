@@ -1,6 +1,10 @@
 .enable_plugin_jqgrid() when(@enable-plugin-jqgrid = true) {
 
 .ui-jqgrid {
+ .ui-jqgrid-view {
+	z-index: auto;
+ }
+ 
  .ui-jqgrid-view,
  .ui-paging-info,
  .ui-pg-table,
@@ -116,8 +120,8 @@
 		line-height: 15px;
 		height: 55px;
 		
-		padding-top:3px !important;
-		padding-bottom:5px !important;
+		padding-top:10px !important;
+		padding-bottom:10px !important;
 		
 		background-color:@modal-footer-bg !important;
 		
@@ -179,9 +183,9 @@
 }
 
 
-.ui-jqgrid .ui-pg-button:hover {
-    padding: 1px;
-}
+//.ui-jqgrid .ui-pg-button:hover {
+    //padding: 1px;
+//}
 
 .ui-jqgrid .ui-pg-button .ui-separator {
 	margin-left:4px;
@@ -195,6 +199,7 @@
 .ui-jqgrid .ui-jqgrid-bdiv {
 	border-top:1px solid #E1E1E1;
 	//.box-sizing(content-box);
+	overflow-x: hidden;
 }
 
 
@@ -356,10 +361,14 @@ th[aria-selected=true] {
 		margin-bottom:0;
 	}
 	select  {
-		padding:1px;
-		height:25px;
-		line-height:25px;
+		padding: 1px;
+		height: 25px;
+		line-height: 25px;
 	}
+}
+
+.ui-jqgrid select.inline-edit-cell {
+ padding: 1px;
 }
 
 .ui-pg-div .ui-icon{
@@ -644,6 +653,7 @@ th[aria-selected=true] {
 
 .fm-button {
 	margin:0 4px;
+	height: auto;
 }
 .fm-button:not(.btn) {
 	background-color: @btn-default;
@@ -768,6 +778,20 @@ th[aria-selected=true] {
 
 
 
+//override ui.jqgrid.css
+.ui-jqgrid .ui-pg-button:hover { padding: 0 1px;}
+.ui-jqgrid .ui-state-disabled:hover {padding: 0 1px;}
+.ui-jqgrid .ui-pg-table .ui-pg-button.ui-state-disabled:hover > .ui-separator {
+	margin-left: 4px;
+	margin-right: 4px;
+}
+.ui-jqgrid .ui-pg-table .ui-pg-button.ui-state-disabled:hover > .ui-pg-div > .ui-icon {
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+
+
 
 @media only screen and (max-width: @screen-xs-max) {
 
@@ -775,7 +799,7 @@ th[aria-selected=true] {
     height: 90px;
     > .ui-pager-control {
 		height: 85px;
-		padding-top: 9px;
+		padding-top: 10px !important;
 		
 		> .ui-pg-table {
 			> tbody > tr > td { 
@@ -797,6 +821,9 @@ th[aria-selected=true] {
 			}
 		}
     }
+ }
+ .ui-jqgrid .ui-jqgrid-pager .navtable {
+	height: auto;
  }
 }
 

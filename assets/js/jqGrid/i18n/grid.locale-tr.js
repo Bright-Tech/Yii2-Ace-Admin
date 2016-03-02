@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Turkish Translation
  * Erhan Gündoğan (erhan@trposta.net)
@@ -7,13 +6,46 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["tr"] = {
 	defaults : {
 		recordtext: "{0}-{1} listeleniyor. Toplam:{2}",
 	    emptyrecords: "Kayıt bulunamadı",
 		loadtext: "Yükleniyor...",
-		pgtext : "{0}/{1}. Sayfa"
+		pgtext : "{0}/{1}. Sayfa",
+		savetext: "Saving...",
+		pgfirst : "First Page",
+		pglast : "Last Page",
+		pgnext : "Next Page",
+		pgprev : "Previous Page",
+		pgrecs : "Records per Page",
+		showhide: "Toggle Expand Collapse Grid",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
 	},
 	search : {
 	    caption: "Arama...",
@@ -72,7 +104,12 @@ $.extend($.jgrid,{
 	    alertcap: "Uyarı",
 	    alerttext: "Lütfen bir satır seçiniz",
 		viewtext: "",
-		viewtitle: "Seçilen satırı görüntüle"
+		viewtitle: "Seçilen satırı görüntüle",
+		savetext: "",
+		savetitle: "Save row",
+		canceltext: "",
+		canceltitle : "Cancel row editing",
+		selectcaption : "Actions..."
 	},
 	col : {
 	    caption: "Sütunları göster/gizle",
@@ -116,7 +153,8 @@ $.extend($.jgrid,{
 	            UniversalSortableDateTime: "Y-m-d H:i:sO",
 	            YearMonth: "F, Y"
 	        },
-	        reformatAfterEdit : false
+	        reformatAfterEdit : false,
+			userLocalTime : false
 		},
 		baseLinkUrl: '',
 		showAction: '',
@@ -124,5 +162,5 @@ $.extend($.jgrid,{
 	    checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

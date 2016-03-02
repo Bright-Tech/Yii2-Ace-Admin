@@ -75,6 +75,11 @@ button.btn:active {
 }
 
 
+.input-group-lg > .form-control, .input-group-lg > .input-group-addon, .input-group-lg > .input-group-btn > .btn {
+	border-radius: 0;
+}
+
+
 
 .enable_default_buttons() when(@enable-default-buttons = true) {
 
@@ -85,7 +90,8 @@ button.btn:active {
 	border-color: @color1;
   }
 
-  &:hover , &:active, .open > &.dropdown-toggle {
+  &:hover , &:active, &:focus:active, &:focus:hover, &:active:hover, &.active:hover,
+  .open > &.dropdown-toggle, .open > &.dropdown-toggle:active, .open > &.dropdown-toggle:hover, .open > &.dropdown-toggle:focus, .open > &.dropdown-toggle.active {
 	background-color: @color2 !important;
 	border-color: @color1;
   }
@@ -294,9 +300,27 @@ button.btn:active {
   .btn-white(darken(@btn-grey , 8%), lighten(@btn-grey , 15%) , lighten(@btn-grey , 30%));
 }
 
+.btn-white.btn-transparent {
+  background-color: rgba(0,0,0,0.4) !important;
+  &:hover {
+	background-color: rgba(0,0,0,0.5) !important;
+  }
+  &:focus, &:active {
+	background-color: rgba(0,0,0,0.6) !important;
+  }
+}
+
+.btn-white.no-border {
+  border-color: transparent !important;
+}
 
 }
 .enable_white_buttons();
+
+
+
+
+
 
 
 
@@ -417,13 +441,15 @@ button.btn:active {
   line-height: 20px !important;
 
  &:hover {
-	background: none !important;
+	background: transparent none !important;
 	text-shadow: none !important;
  }
- &.active {
-	background: none !important;
-	text-decoration: underline;
-	color: lighten(@btn-link-color , 6%) !important;
+ &.active, &:active, &:focus {
+    & , .open > & {
+		background: transparent none !important;
+		text-decoration: underline;
+		color: lighten(@btn-link-color , 6%) !important;
+	}
 	&:after {
 		display: none;
 	}
@@ -529,7 +555,7 @@ button.btn:active {
    }
    
 }
-.btn-group-vertical > .btn:last-child:not(:first-child) {
+.btn-group-vertical > .btn:last-child:not(:first-child) , .btn-group-vertical > .btn:first-child:not(:last-child) {
 	border-radius: 0;
 }
 

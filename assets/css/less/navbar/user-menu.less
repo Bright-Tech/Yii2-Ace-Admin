@@ -101,7 +101,7 @@
 
  //for when navbar dropdowns become fixed
  @media (max-height: @screen-qhd-width) and (min-width: @screen-topbar-down-min) and (max-width: @screen-qhd-width) , (max-height: @screen-qhd-width) and (max-width: @screen-topbar-down-small) {
-	.navbar:not(.navbar-collapse) .navbar-buttons .user-info {
+	.navbar:not(.navbar-collapse) .ace-nav > li.dropdown-modal .user-info {
 		position: fixed;
 		right: auto;
 		margin-top: auto;
@@ -109,7 +109,7 @@
 	}
  }
  @media (max-height: @screen-qhd-width) and (max-width: @screen-topbar-down-small) {
-   .navbar.navbar-collapse .navbar-buttons .user-info {
+   .navbar.navbar-collapse .ace-nav > li.dropdown-modal .user-info {
 		position: fixed;
 		right: auto;
 		margin-top: auto;
@@ -117,7 +117,7 @@
 	}
  }
  @media (max-height: @screen-qhd-width) and (min-width: @grid-float-breakpoint) {
-   .user-min .user-info {
+   .ace-nav > li.dropdown-modal.user-min .user-info {
 		position: fixed;
 		right: auto;
 		margin-top: auto;

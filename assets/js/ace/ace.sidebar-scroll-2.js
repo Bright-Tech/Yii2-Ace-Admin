@@ -1,12 +1,15 @@
 /**
- <b>Scrollbars for sidebar</b>. This approach can be used on fixed or normal sidebar.
+ <b>Scrollbars for sidebar <i>(second style)</i></b>. This approach can be used on fixed or normal sidebar.
  It uses <u>"overflow:hidden"</u> so you can't use <u>.hover</u> submenus and it will be disabled when sidebar is minimized.
  It may also be slightly faster especially when resizing browser window.
- Needs some work! Has a few issues!
+ <i class="glyphicon glyphicon-flash"></i> <u class="text-primary">Native browser scrollbars</u> are used in touch devices.
 */
 
 (function($ , undefined) {
 	//if( !$.fn.ace_scroll ) return;
+	
+	var hasTouch = ace.vars['touch'];
+	var nativeScroll = /**ace.vars['old_ie'] ||*/ hasTouch;
 
 	var old_safari = ace.vars['safari'] && navigator.userAgent.match(/version\/[1-5]/i)
 	//NOTE
@@ -72,7 +75,7 @@
 			var offset = $nav.parent().offset();//because `$nav.offset()` considers the "scrolled top" amount as well
 			if(self.sidebar_fixed) offset.top -= ace.helper.scrollTop();
 
-			return $window.innerHeight() - offset.top - ( self.settings.include_toggle ? 0 : $toggle.outerHeight() );
+			return $window.innerHeight() - offset.top - ( self.settings.include_toggle ? 0 : $toggle.outerHeight() ) + 1;
 		}
 		var content_height = function() {
 			return nav.scrollHeight;
@@ -88,26 +91,33 @@
 			if(self.settings.include_shortcuts && $shortcuts.length != 0) $nav.parent().prepend($shortcuts);
 			if(self.settings.include_toggle && $toggle.length != 0) $nav.parent().append($toggle);
 
-			scroll_div = $nav.parent()
-			.ace_scroll({
-				size: available_height(),
-				reset: true,
-				mouseWheelLock: true,
-				lockAnyway: self.settings.lock_anyway,
-				styleClass: self.settins.scroll_style,
-				hoverReset: false
-			})
-			.closest('.ace-scroll').addClass('nav-scroll');
-			
-			ace_scroll = scroll_div.data('ace_scroll');
+			if(!nativeScroll) {
+				scroll_div = $nav.parent()
+				.ace_scroll({
+					size: available_height(),
+					reset: true,
+					mouseWheelLock: true,
+					lockAnyway: self.settings.lock_anyway,
+					styleClass: self.settings.scroll_style,
+					hoverReset: false
+				})
+				.closest('.ace-scroll').addClass('nav-scroll');
+				
+				ace_scroll = scroll_div.data('ace_scroll');
 
-			scroll_content = scroll_div.find('.scroll-content').eq(0);
+				scroll_content = scroll_div.find('.scroll-content').eq(0);
 
-			if(old_safari && !self.settings.include_toggle) {
-				var toggle = $toggle.get(0);
-				if(toggle) scroll_content.on('scroll.safari', function() {
-					ace.helper.redraw(toggle);
-				});
+				if(old_safari && !self.settings.include_toggle) {
+					var toggle = $toggle.get(0);
+					if(toggle) scroll_content.on('scroll.safari', function() {
+						ace.helper.redraw(toggle);
+					});
+				}
+			}
+			else {
+				$nav.parent().addClass('sidebar-scroll-native').css('max-height', available_height());
+				ace_scroll = true;
+				scroll_div = scroll_content = $nav.parent();
 			}
 
 			_initiated = true;
@@ -126,7 +136,7 @@
 		
 		
 		this.scroll_to_active = function() {
-			if( !ace_scroll || !ace_scroll.is_active() ) return;
+			if( !nativeScroll && (!ace_scroll || !ace_scroll.is_active()) ) return;
 			try {
 				//sometimes there's no active item or not 'offsetTop' property
 				var $active;
@@ -193,19 +203,34 @@
 			if( enable_scroll && ace_scroll ) {
 				//scroll_content_div.css({height: $content_height, width: 8});
 				//scroll_div.prev().css({'max-height' : $avail_height})
-				ace_scroll.update({size: $avail_height});
-				ace_scroll.enable();
-				ace_scroll.reset();
+				if(!nativeScroll) {
+					ace_scroll.update({size: $avail_height});
+					ace_scroll.enable();
+					ace_scroll.reset();
+				}
+				else {
+					$nav.parent().addClass('sidebar-scroll-native').css('max-height', $avail_height);
+				}
 			}
-			if( !enable_scroll || !ace_scroll.is_active() ) {
-				if(this.is_scrolling) this.disable();
+			
+			if(!nativeScroll) {
+				if( !enable_scroll || !ace_scroll.is_active() ) {
+					if(this.is_scrolling) this.disable();
+				}
 			}
+			else {
+				if( !enable_scroll && this.is_scrolling ) this.disable();
+			}
+			
 			//return is_scrolling;
 		}
 		
 		this.disable = function() {
 			this.is_scrolling = false;
-			if(ace_scroll) ace_scroll.disable();
+			if(ace_scroll) {
+				if(!nativeScroll) ace_scroll.disable();
+				else $nav.parent().removeClass('sidebar-scroll-native').css('max-height', '');
+			}
 			
 			$sidebar.removeClass('sidebar-scroll');
 		}
@@ -248,7 +273,7 @@
 		}
 		
 		this.updateStyle = function(styleClass) {
-			if(ace_scroll == null) return;
+			if(!ace_scroll || nativeScroll) return;
 			ace_scroll.update({styleClass: styleClass});
 		}
 		

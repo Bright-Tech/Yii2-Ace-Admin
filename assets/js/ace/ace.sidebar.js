@@ -18,12 +18,13 @@
 
 
 		//some vars
-		this.minimized = false;//will be initiated later
+		this.minimized = false;//will be initialized later
 		this.collapsible = false;//...
 		this.horizontal = false;//...
 		this.mobile_view = false;//
 
 
+		//return an array containing sidebar state variables
 		this.vars = function() {
 			return {'minimized': this.minimized, 'collapsible': this.collapsible, 'horizontal': this.horizontal, 'mobile_view': this.mobile_view}
 		}
@@ -35,27 +36,34 @@
 		}
 		
 
+		//return a reference to self (sidebar instance)
 		this.ref = function() {
-			//return a reference to self
 			return this;
 		}
 
-		var toggleIcon = function(minimized) {
+		
+		//toggle icon for sidebar collapse/expand button
+		var toggleIcon = function(minimized, save) {
 			var icon = $(this).find(ace.vars['.icon']), icon1, icon2;
 			if(icon.length > 0) {
 				icon1 = icon.attr('data-icon1');//the icon for expanded state
 				icon2 = icon.attr('data-icon2');//the icon for collapsed state
 
-				if(minimized !== undefined) {
+				if(typeof minimized !== "undefined") {
 					if(minimized) icon.removeClass(icon1).addClass(icon2);
 					else icon.removeClass(icon2).addClass(icon1);
 				}
 				else {
 					icon.toggleClass(icon1).toggleClass(icon2);
 				}
+				
+				try {
+					if(save !== false) ace.settings.saveState(icon.get(0));
+				} catch(e) {}
 			}
-		}		
+		}
 		
+		//if not specified, find the toggle button related to this sidebar
 		var findToggleBtn = function() {
 			var toggle_btn = self.$sidebar.find('.sidebar-collapse');
 			if(toggle_btn.length == 0) toggle_btn = $('.sidebar-collapse[data-target="#'+(self.$sidebar.attr('id')||'')+'"]');
@@ -65,31 +73,34 @@
 			return toggle_btn;
 		}
 		
-		//collapse/expand button
+		
+		//collapse/expand sidebar
 		this.toggleMenu = function(toggle_btn, save) {
 			if(this.collapsible) return;
 
-			//var minimized = this.$sidebar.hasClass('menu-min');
 			this.minimized = !this.minimized;
+			var save = !(toggle_btn === false || save === false);
 			
+		
+			if(this.minimized) this.$sidebar.addClass('menu-min');
+			else this.$sidebar.removeClass('menu-min');
+
 			try {
-				//toggle_btn can also be a param to indicate saving to cookie or not?! if toggle_btn === false, it won't be saved
-				ace.settings.sidebar_collapsed(sidebar, this.minimized, !(toggle_btn === false || save === false));//@ ace-extra.js
-			} catch(e) {
-				if(this.minimized)
-					this.$sidebar.addClass('menu-min');
-				else this.$sidebar.removeClass('menu-min');
-			}
-	
+				if(save) ace.settings.saveState(sidebar, 'class', 'menu-min', this.minimized);
+			} catch(e) {}
+		
 			if( !toggle_btn ) {
 				toggle_btn = findToggleBtn();
 			}
 			if(toggle_btn) {
-				toggleIcon.call(toggle_btn, this.minimized);
+				toggleIcon.call(toggle_btn, this.minimized, save);
 			}
 
 			//force redraw for ie8
 			if(ace.vars['old_ie']) ace.helper.redraw(sidebar);
+			
+			
+			$(document).trigger('settings.ace', ['sidebar_collapsed' , this.minimized, sidebar, save]);
 		}
 		this.collapse = function(toggle_btn, save) {
 			if(this.collapsible) return;
@@ -106,9 +117,13 @@
 		
 
 		
+		this.showResponsive = function() {
+			this.$sidebar.removeClass(responsive_min_class).removeClass(responsive_max_class);
+		}
+		
 		//collapse/expand in 2nd mobile style
-		this.toggleResponsive = function(toggle_btn) {
-			if(!this.mobile_view || this.mobile_style != 3) return;
+		this.toggleResponsive = function(toggle_btn, showMenu) {
+			if( !this.mobile_view || this.mobile_style != 3 ) return;
 		
 			if( this.$sidebar.hasClass('menu-min') ) {
 				//remove menu-min because it interferes with responsive-max
@@ -118,8 +133,14 @@
 			}
 
 
-			this.minimized = !this.$sidebar.hasClass('responsive-min');
-			this.$sidebar.toggleClass('responsive-min responsive-max');
+			var showMenu = typeof showMenu !== 'undefined' ? showMenu : this.$sidebar.hasClass(responsive_min_class);
+			if(showMenu) {
+				this.$sidebar.addClass(responsive_max_class).removeClass(responsive_min_class);
+			}
+			else {
+				this.$sidebar.removeClass(responsive_max_class).addClass(responsive_min_class);
+			}
+			this.minimized = !showMenu;
 
 
 			if( !toggle_btn ) {
@@ -135,14 +156,18 @@
 					icon1 = icon.attr('data-icon1');//the icon for expanded state
 					icon2 = icon.attr('data-icon2');//the icon for collapsed state
 
-					icon.toggleClass(icon1).toggleClass(icon2);
+					if(!showMenu) icon.removeClass(icon2).addClass(icon1);
+					else icon.removeClass(icon1).addClass(icon2);
 				}
 			}
 
 			$(document).triggerHandler('settings.ace', ['sidebar_collapsed' , this.minimized]);
 		}
 		
+		
 		//some helper functions
+		
+		//determine if we have 4th mobile style responsive sidebar and we are in mobile view
 		this.is_collapsible = function() {
 			var toggle
 			return (this.$sidebar.hasClass('navbar-collapse'))
@@ -150,6 +175,7 @@
 			&&  toggle.scrollHeight > 0
 			//sidebar is collapsible and collapse button is visible?
 		}
+		//determine if we are in mobile view
 		this.is_mobile_view = function() {
 			var toggle
 			return ((toggle = $('.menu-toggler[data-target="#'+(this.$sidebar.attr('id')||'')+'"]').get(0)) != null)
@@ -157,7 +183,7 @@
 		}
 
 
-		//toggling submenu
+		//toggling (show/hide) submenu elements
 		this.$sidebar.on(ace.click_event+'.ace.submenu', '.nav-list', function (ev) {
 			var nav_list = this;
 
@@ -229,7 +255,7 @@
 			var sub_hidden = (sub.scrollHeight == 0)
 
 			//if not open and visible, let's open it and make it visible
-			if( sub_hidden ) {//being shown now
+			if( sub_hidden && self.settings.hide_open_subs ) {//being shown now
 			  $(parent_ul).find('> .open > .submenu').each(function() {
 				//close all other open submenus except for the active one
 				if(this != sub && !$(this.parentNode).hasClass('active')) {
@@ -277,7 +303,7 @@
 			if(shouldWait) submenu_working = true;
 
 
-			$duration = $duration || this.settings.duration;
+			$duration = typeof $duration !== 'undefined' ? $duration : this.settings.duration;
 			
 			$sub.css({
 				height: 0,
@@ -289,12 +315,7 @@
 			
 			sub.scrollTop = 0;//this is for submenu_hover when sidebar is minimized and a submenu is scrollTop'ed using scrollbars ...
 
-			if( $duration > 0 ) {
-			  $sub.css({height: sub.scrollHeight,
-				'transition-property': 'height',
-				'transition-duration': ($duration/1000)+'s'})
-			}
-
+			
 			var complete = function(ev, trigger) {
 				ev && ev.stopPropagation();
 				$sub
@@ -306,17 +327,30 @@
 				if(shouldWait) submenu_working = false;
 			}
 			
-			if( $duration > 0 && !!$.support.transition.end ) {
-			  $sub.one($.support.transition.end, complete);
-			}
-			else complete();
 			
-			//there is sometimes a glitch, so maybe retry
-			if(ace.vars['android']) {
-				setTimeout(function() {
-					complete(null, false);
-					ace.helper.redraw(sub);
-				}, $duration + 20);
+			var finalHeight = sub.scrollHeight;
+
+			if($duration == 0 || finalHeight == 0 || !$.support.transition.end) {
+				//(if duration is zero || element is hidden (scrollHeight == 0) || CSS3 transitions are not available)
+				complete();
+			}
+			else {
+				$sub
+				.css({
+					 'height': finalHeight,
+					 'transition-property': 'height',
+					 'transition-duration': ($duration/1000)+'s'
+					}
+				)
+				.one($.support.transition.end, complete);
+				
+				//there is sometimes a glitch, so maybe retry
+				if(ace.vars['android'] ) {
+					setTimeout(function() {
+						complete(null, false);
+						ace.helper.redraw(sub);
+					}, $duration + 20);
+				}
 			}
 
 			return true;
@@ -339,10 +373,12 @@
 			if(shouldWait) submenu_working = true;
 			
 
-			$duration = $duration || this.settings.duration;
+			$duration = typeof $duration !== 'undefined' ? $duration : this.settings.duration;
 			
+			
+			var initialHeight = sub.scrollHeight;
 			$sub.css({
-				height: sub.scrollHeight,
+				height: initialHeight,
 				overflow: 'hidden',
 				display: 'block'
 			})
@@ -351,13 +387,7 @@
 			sub.offsetHeight;
 			//forces the "sub" to re-consider the new 'height' before transition
 
-			if( $duration > 0 ) {
-			  $sub.css({'height': 0,
-				'transition-property': 'height',
-				'transition-duration': ($duration/1000)+'s'});
-			}
-
-
+			
 			var complete = function(ev, trigger) {
 				ev && ev.stopPropagation();
 				$sub
@@ -368,19 +398,29 @@
 				
 				if(shouldWait) submenu_working = false;
 			}
-
-			if( $duration > 0 && !!$.support.transition.end ) {
-			   $sub.one($.support.transition.end, complete);
+			
+			
+			if( $duration == 0 || initialHeight == 0 || !$.support.transition.end) {
+				//(if duration is zero || element is hidden (scrollHeight == 0) || CSS3 transitions are not available)
+				complete();
 			}
-			else complete();
-
-
-			//there is sometimes a glitch, so maybe retry
-			if(ace.vars['android']) {
-				setTimeout(function() {
-					complete(null, false);
-					ace.helper.redraw(sub);
-				}, $duration + 20);
+			else {
+				$sub
+				.css({
+					 'height': 0,
+					 'transition-property': 'height',
+					 'transition-duration': ($duration/1000)+'s'
+					}
+				)
+				.one($.support.transition.end, complete);
+				
+				//there is sometimes a glitch, so maybe retry
+				if(ace.vars['android'] ) {
+					setTimeout(function() {
+						complete(null, false);
+						ace.helper.redraw(sub);
+					}, $duration + 20);
+				}
 			}
 
 			return true;
@@ -401,6 +441,7 @@
 		//sidebar vars
 		var minimized_menu_class  = 'menu-min';
 		var responsive_min_class  = 'responsive-min';
+		var responsive_max_class  = 'responsive-max';
 		var horizontal_menu_class = 'h-sidebar';
 
 		var sidebar_mobile_style = function() {
@@ -428,6 +469,67 @@
 		$(window).on('resize.sidebar.vars' , function(){
 			update_vars.call(self);
 		}).triggerHandler('resize.sidebar.vars')
+		
+		
+		
+		
+		
+		this.mobileToggle = function(showMenu) {
+			var showMenu = typeof showMenu === "undefined" ? undefined : showMenu;
+			
+			if(this.mobile_view) {
+				if(this.mobile_style == 1 || this.mobile_style == 2) {
+					this.toggleMobile(null, showMenu);
+				}
+				else if(this.mobile_style == 3) {
+					this.toggleResponsive(null, showMenu);
+				}
+			}
+			else if(this.collapsible) {
+				this.toggleCollapsible(null, showMenu);
+			}
+		}
+		this.mobileShow = function() {
+			this.mobileToggle(true);
+		}
+		this.mobileHide = function() {
+			this.mobileToggle(false);
+		}
+		
+		
+		
+		this.toggleMobile = function(toggle_btn, showMenu) {
+			if(!(this.mobile_style == 1 || this.mobile_style == 2)) return;
+			
+			var showMenu = typeof showMenu !== 'undefined' ? showMenu : !this.$sidebar.hasClass('display');
+			if(!toggle_btn) {
+				toggle_btn = $('.menu-toggler[data-target="#'+(this.$sidebar.attr('id')||'')+'"]');
+				if(toggle_btn.length != 0) toggle_btn = toggle_btn[0];
+				else toggle_btn = null;
+			}
+			if(showMenu) {
+				this.$sidebar.addClass('display');
+				if(toggle_btn) $(toggle_btn).addClass('display');
+			}
+			else {
+				this.$sidebar.removeClass('display');
+				if(toggle_btn) $(toggle_btn).removeClass('display');
+			}
+		}
+		
+		
+		this.toggleCollapsible = function(toggle_btn, showMenu) {
+			if(this.mobile_style != 4) return;
+			
+			var showMenu = typeof showMenu !== 'undefined' ? showMenu : !this.$sidebar.hasClass('in');
+			if(showMenu) {
+				this.$sidebar.collapse('show');
+			}
+			else {
+				this.$sidebar.removeClass('display');
+				this.$sidebar.collapse('hide');
+			}	
+		}
 
 	}//end of Sidebar
 	
@@ -443,8 +545,10 @@
 		
 		e.preventDefault();
 				
-		sidebar.toggleClass('display');
-		btn.toggleClass('display');
+		//sidebar.toggleClass('display');
+		//btn.toggleClass('display');
+		
+		sidebar.ace_sidebar('toggleMobile', this);
 		
 		var click_event = ace.click_event+'.ace.autohide';
 		var auto_hide = sidebar.attr('data-auto-hide') === 'true';
@@ -458,8 +562,7 @@
 						return;
 					}
 
-					sidebar.removeClass('display');
-					btn.removeClass('display');
+					sidebar.ace_sidebar('toggleMobile', this, false);
 					$(document).off(click_event);
 				})
 			}
@@ -496,7 +599,7 @@
 		
 		var click_event = ace.click_event+'.ace.autohide';
 		if($sidebar.attr('data-auto-hide') === 'true') {
-			if( $sidebar.hasClass('responsive-max') ) {
+			if( $sidebar.hasClass(responsive_max_class) ) {
 				$(document).on(click_event, function(ev) {
 					if( $sidebar.get(0) == ev.target || $.contains($sidebar.get(0), ev.target) ) {
 						ev.stopPropagation();
@@ -514,7 +617,7 @@
 	})
 
 	
-	$.fn.ace_sidebar = function (option, value) {
+	$.fn.ace_sidebar = function (option, value, value2) {
 		var method_call;
 
 		var $set = this.each(function () {
@@ -525,6 +628,7 @@
 			if (!data) $this.data('ace_sidebar', (data = new Sidebar(this, options)));
 			if (typeof option === 'string' && typeof data[option] === 'function') {
 				if(value instanceof Array) method_call = data[option].apply(data, value);
+				else if(value2 !== undefined) method_call = data[option](value, value2);
 				else method_call = data[option](value);
 			}
 		});
@@ -534,7 +638,8 @@
 	
 	
 	$.fn.ace_sidebar.defaults = {
-		'duration': 300
+		'duration': 300,
+		'hide_open_subs': true
     }
 
 

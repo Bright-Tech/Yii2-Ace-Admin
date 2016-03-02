@@ -144,9 +144,9 @@
 
 
 //let dropdowns become like modals in small devices!
-@media only screen and (max-height: @screen-qhd-width) {
 //@media only screen and (max-height: @screen-topbar-down) {
- .ace-nav > li > .dropdown-menu {
+@media only screen and (max-height: @screen-qhd-width) {
+ .ace-nav > li.dropdown-modal > .dropdown-menu {
    position: fixed;
    margin-top: auto;
    z-index: @zindex-modal + 2;
@@ -155,11 +155,11 @@
 	  display: none;
     }
  }
- .ace-nav .user-menu > li > a {
+ .ace-nav > li.dropdown-modal > .user-menu > li > a {
 	padding-top: 6px;
 	padding-bottom: 6px;
  }
- .ace-nav > li.open:before {
+ .ace-nav > li.dropdown-modal.open:before {
 	background-color: #000;
 	opacity: 0.5;
 	border-width: 0;

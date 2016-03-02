@@ -298,9 +298,37 @@
 //fix zooming of arrowed labels
 .label:not(.label-lg):not(.label-xlg):not(.label-sm) {
 
+
 @media
 screen and (-webkit-min-device-pixel-ratio: 1.08) and (-webkit-max-device-pixel-ratio: 1.15),
 screen and (min--moz-device-pixel-ratio: 1.08) and (max--moz-device-pixel-ratio: 1.15)
+{
+
+ 	&.arrowed:before {
+		border-width: 10.5px 6px 11px;
+		left: -11px;
+	}
+	&.arrowed-right:after {
+		border-width: 10.5px 6px 11px;
+		right: -11px;
+	}
+
+	&.arrowed-in:before {
+		border-width: 10.5px 5px 11px;
+		left: -6px;
+	}
+	&.arrowed-in-right:after {
+		border-width: 10.5px 5px 11px;
+		right: -6px;
+	}
+}
+
+
+@media
+screen and (-webkit-min-device-pixel-ratio: 1.2) and (-webkit-max-device-pixel-ratio: 1.45),
+screen and (min--moz-device-pixel-ratio: 1.2) and (max--moz-device-pixel-ratio: 1.45),
+screen and (-webkit-min-device-pixel-ratio: 1.6) and (-webkit-max-device-pixel-ratio: 1.9),
+screen and (min--moz-device-pixel-ratio: 1.6) and (max--moz-device-pixel-ratio: 1.9)
 {
 
  	&.arrowed:before {
@@ -318,28 +346,6 @@ screen and (min--moz-device-pixel-ratio: 1.08) and (max--moz-device-pixel-ratio:
 	}
 	&.arrowed-in-right:after {
 		border-width: 10.5px 5px 10px;
-		right: -6px;
-	}
-}
-@media
-screen and (-webkit-min-device-pixel-ratio: 1.3) and (-webkit-max-device-pixel-ratio: 1.4),
-screen and (min--moz-device-pixel-ratio: 1.3) and (max--moz-device-pixel-ratio: 1.4)
-{
- 	&.arrowed:before {
-		border-width: 10px 6px 10px;
-		left: -12px;
-	}
-	&.arrowed-right:after {
-		border-width: 10px 6px 10px;
-		right: -12px;
-	}
-
-	&.arrowed-in:before {
-		border-width: 10px 5px 10px;
-		left: -6px;
-	}
-	&.arrowed-in-right:after {
-		border-width: 10px 5px 10px;
 		right: -6px;
 	}
 }

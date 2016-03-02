@@ -104,13 +104,15 @@
 		color: #1B6AAA !important;
 	}
 }
+
+
 .bootstrap-datetimepicker-widget .btn.btn-primary {
 	border-width: 3px !important;
 }
 
 .bootstrap-datetimepicker-widget .picker-switch {
 	margin-bottom: 2px;
-	.btn {
+	a {
 		width: 90% !important;
 		background-color: #EEE !important;
 		color: @ace-blue !important;
@@ -119,10 +121,15 @@
 		&:hover {
 			background-color: desaturate(lighten(@btn-primary , 40%) , 10%) !important;
 		}
+		span {
+			background: none !important;
+			width: 90%;
+		}
 	}
 }
-.bootstrap-datetimepicker-widget td span {
+.bootstrap-datetimepicker-widget table td span {
 	border-radius: 0;
+	//margin: 0;
 }
 .bootstrap-datetimepicker-widget {
   .timepicker-hour, .timepicker-minute, .timepicker-second {

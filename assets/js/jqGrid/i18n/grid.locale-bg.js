@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Bulgarian Translation 
  * Tony Tomov tony@trirand.com
@@ -7,13 +6,46 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["bg"] = {
 	defaults : {
 		recordtext: "{0} - {1} от {2}",
 		emptyrecords: "Няма запис(и)",
 		loadtext: "Зареждам...",
-		pgtext : "Стр. {0} от {1}"
+		savetext: "Записвам...",
+		pgtext : "Стр. {0} от {1}",
+		pgfirst : "Първа Стр.",
+		pglast : "Последна Стр.",
+		pgnext : "Следваща Стр.",
+		pgprev : "Предишна Стр.",
+		pgrecs : "Брой записи на Стр.",
+		showhide: "Свиване/Разтягане на таблицата",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
 	},
 	search : {
 		caption: "Търсене...",
@@ -73,7 +105,12 @@ $.extend($.jgrid,{
 		alertcap: "Предупреждение",
 		alerttext: "Моля, изберете запис",
 		viewtext: "",
-		viewtitle: "Преглед избран запис"
+		viewtitle: "Преглед избран запис",
+		savetext: "",
+		savetitle: "Съхрани запис",
+		canceltext: "",
+		canceltitle : "Отказ редакция",
+		selectcaption : "Actions..."
 	},
 	col : {
 		caption: "Избери колони",
@@ -122,7 +159,8 @@ $.extend($.jgrid,{
 				UniversalSortableDateTime: "Y-m-d H:i:sO",
 				YearMonth: "F, Y"
 			},
-			reformatAfterEdit : false
+			reformatAfterEdit : false,
+			userLocalTime : false
 		},
 		baseLinkUrl: '',
 		showAction: '',
@@ -130,5 +168,5 @@ $.extend($.jgrid,{
 		checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

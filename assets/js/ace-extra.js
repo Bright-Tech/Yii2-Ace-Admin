@@ -1,261 +1,197 @@
+(function(){
 if( !('ace' in window) ) window['ace'] = {}
 
 ace.config = {
- cookie_expiry : 604800, //1 week duration for saved settings
- cookie_path: '',
- storage_method: 2 //2 means use cookies, 1 means localStorage, 0 means localStorage if available otherwise cookies
+ storage_method: 0, //0 means use localStorage if available otherwise cookies, 1 means localStorage, 2 means cookies
+ cookie_expiry : 604800, //(cookie only) 1 week duration for saved settings
+ cookie_path: ''//(cookie only)
 }
 if( !('vars' in window['ace']) ) window['ace'].vars = {}
 ace.vars['very_old_ie']	= !('querySelector' in document.documentElement);
 
-
 ace.settings = {
-	is : function(item, status) {
-		//such as ace.settings.is('navbar', 'fixed')
-		return (ace.data.get('settings', item+'-'+status) == 1)
-	},
-	exists : function(item, status) {
-		return (ace.data.get('settings', item+'-'+status) !== null)
-	},
-	set : function(item, status) {
-		ace.data.set('settings', item+'-'+status, 1)
-	},
-	unset : function(item, status) {
-		ace.data.set('settings', item+'-'+status, -1)
-	},
-	remove : function(item, status) {
-		ace.data.remove('settings', item+'-'+status)
-	},
-
-	navbar_fixed : function(navbar, fix , save, chain) {
-		if(ace.vars['very_old_ie']) return false;
+	saveState : function(element, attrName, attrVal, append) {
+		if( !element || (typeof element == 'string' && !(element = document.getElementById(element))) || !element.hasAttribute('id') ) return false;
+		if( !ace.hasClass(element, 'ace-save-state') ) return false;
 		
-		var navbar = navbar || '#navbar';
-		if(typeof navbar === 'string') navbar = document.querySelector(navbar);
-		if(!navbar) return false;
-	
-		fix = fix || false;
-		save = save && true;
-	
-		if(!fix && chain !== false) {
-			//unfix sidebar as well
-			var sidebar = null;
-			if(
-				ace.settings.is('sidebar', 'fixed')
-				||
-				((sidebar = document.getElementById('sidebar')) && ace.hasClass(sidebar , 'sidebar-fixed'))
-			 )
-			{
-				ace.settings.sidebar_fixed(sidebar, false, save);
+		var attrName = attrName || 'class';
+		var id = element.getAttribute('id');
+		
+		var attrList = ace.data.get('state', 'id-'+id) || {};
+		if(typeof attrList == 'string') {
+			try {
+				attrList = JSON.parse(attrList);
+			}
+			catch(e) {
+				attrList = {}
 			}
 		}
+
+		var newVal, hasCustomVal = typeof attrVal !== 'undefined', $delete = false;
 		
-		if(fix) {
-			if(!ace.hasClass(navbar , 'navbar-fixed-top'))  ace.addClass(navbar , 'navbar-fixed-top');
+		var re1 = /class/i
+		var re2 = /checked|disabled|readonly|value/i
+
+		if(re2.test(attrName)) newVal = hasCustomVal ? attrVal : element[attrName];
+		else {
+			if(element.hasAttribute(attrName)) {
+				newVal = hasCustomVal ? attrVal : element.getAttribute(attrName);
+			}
+			else if(!hasCustomVal) $delete = true;
+			//delete this, because element has no such attribute and we haven't given a custom value! (no attrVal)
+		}
+		
+	
+		if($delete) {
+			delete attrList[attrName];
+		}
+		else {
+			//save class names as an object which indicated which classes should be included or excluded (true/false)
+			if( re1.test(attrName) ) {//class
 			
-			if(save !== false) ace.settings.set('navbar', 'fixed');
-		} else {
-			ace.removeClass(navbar , 'navbar-fixed-top');
+				
+				if( !attrList.hasOwnProperty(attrName) ) attrList[attrName] = {}
+				if(append === true) {
+					//append to previous value					
+					attrList[attrName][newVal] = 1;
+				}
+				else if(append === false) {
+					//remove from previous value
+					attrList[attrName][newVal] = -1;
+				}
+				else {
+					attrList[attrName]['className'] = newVal;
+				}
+			}
 			
-			if(save !== false) ace.settings.unset('navbar', 'fixed');
-		}
-		try {
-			document.getElementById('ace-settings-navbar').checked = fix;
-		} catch(e) {}
-		
-		if(window.jQuery) jQuery(document).trigger('settings.ace', ['navbar_fixed' , fix , navbar]);
-	},
-
-
-	sidebar_fixed : function(sidebar, fix , save, chain) {
-		if(ace.vars['very_old_ie']) return false;
-		
-		var sidebar = sidebar || '#sidebar';
-		if(typeof sidebar === 'string') sidebar = document.querySelector(sidebar);
-		if(!sidebar) return false;
-	
-		fix = fix || false;
-		save = save && true;
-		
-		if(!fix && chain !== false) {
-			//unfix breadcrumbs as well
-			var breadcrumbs = null;
-			if(
-				ace.settings.is('breadcrumbs', 'fixed')
-				||
-				((breadcrumbs = document.getElementById('breadcrumbs')) && ace.hasClass(breadcrumbs , 'breadcrumbs-fixed'))
-			 )
-			{
-				ace.settings.breadcrumbs_fixed(breadcrumbs, false, save);
-			}
-		}
-
-		if( fix && chain !== false && !ace.settings.is('navbar', 'fixed') ) {
-			ace.settings.navbar_fixed(null, true, save);
-		}
-
-		if(fix) {
-			if( !ace.hasClass(sidebar , 'sidebar-fixed') )  {
-				ace.addClass(sidebar , 'sidebar-fixed');
-				var toggler = document.getElementById('menu-toggler');
-
-				if(toggler) ace.addClass(toggler , 'fixed');
-			}
-			if(save !== false) ace.settings.set('sidebar', 'fixed');
-		} else {
-			ace.removeClass(sidebar , 'sidebar-fixed');
-			var toggler = document.getElementById('menu-toggler');
-			if(toggler) ace.removeClass(toggler , 'fixed');
-
-			if(save !== false) ace.settings.unset('sidebar', 'fixed');
-		}
-		try {
-			document.getElementById('ace-settings-sidebar').checked = fix;
-		} catch(e) {}
-		
-		if(window.jQuery) jQuery(document).trigger('settings.ace', ['sidebar_fixed' , fix , sidebar]);
-	},
-	
-	//fixed position
-	breadcrumbs_fixed : function(breadcrumbs, fix , save, chain) {
-		if(ace.vars['very_old_ie']) return false;
-		
-		var breadcrumbs = breadcrumbs || '#breadcrumbs';
-		if(typeof breadcrumbs === 'string') breadcrumbs = document.querySelector(breadcrumbs);
-		if(!breadcrumbs) return false;
-	
-		fix = fix || false;
-		save = save && true;
-		
-		if(fix && chain !== false && !ace.settings.is('sidebar', 'fixed')) {
-			ace.settings.sidebar_fixed(null, true, save);
-		}
-
-		if(fix) {
-			if(!ace.hasClass(breadcrumbs , 'breadcrumbs-fixed'))  ace.addClass(breadcrumbs , 'breadcrumbs-fixed');
-			if(save !== false) ace.settings.set('breadcrumbs', 'fixed');
-		} else {
-			ace.removeClass(breadcrumbs , 'breadcrumbs-fixed');
-			if(save !== false) ace.settings.unset('breadcrumbs', 'fixed');
-		}
-		try {
-			document.getElementById('ace-settings-breadcrumbs').checked = fix;
-		} catch(e) {}
-		
-		if(window.jQuery) jQuery(document).trigger('settings.ace', ['breadcrumbs_fixed' , fix , breadcrumbs]);
-	},
-
-	//fixed size
-	main_container_fixed : function(main_container, inside , save) {
-		if(ace.vars['very_old_ie']) return false;
-		
-		inside = inside || false;
-		save = save && true;
-		
-		var main_container = main_container || '#main-container';
-		if(typeof main_container === 'string') main_container = document.querySelector(main_container);
-		if(!main_container) return false;
-		
-		var navbar_container = document.getElementById('navbar-container');
-		if(inside) {
-			if( !ace.hasClass(main_container , 'container') )  ace.addClass(main_container , 'container');
-			if( navbar_container && !ace.hasClass(navbar_container , 'container') )  ace.addClass(navbar_container , 'container');
-			if( save !== false ) ace.settings.set('main-container', 'fixed');
-		} else {
-			ace.removeClass(main_container , 'container');
-			if(navbar_container) ace.removeClass(navbar_container , 'container');
-			if(save !== false) ace.settings.unset('main-container', 'fixed');
-		}
-		try {
-			document.getElementById('ace-settings-add-container').checked = inside;
-		} catch(e) {}
-
-		
-		if(navigator.userAgent.match(/webkit/i)) {
-			//webkit has a problem redrawing and moving around the sidebar background in realtime
-			//so we do this, to force redraw
-			//there will be no problems with webkit if the ".container" class is statically put inside HTML code.
-			var sidebar = document.getElementById('sidebar')
-			ace.toggleClass(sidebar , 'menu-min')
-			setTimeout(function() {	ace.toggleClass(sidebar , 'menu-min') } , 0)
-		}
-		
-		if(window.jQuery) jQuery(document).trigger('settings.ace', ['main_container_fixed', inside, main_container]);
-	},
-
-	sidebar_collapsed : function(sidebar, collapse , save) {
-		if(ace.vars['very_old_ie']) return false;
-
-		var sidebar = sidebar || '#sidebar';
-		if(typeof sidebar === 'string') sidebar = document.querySelector(sidebar);
-		if(!sidebar) return false;
-
-		collapse = collapse || false;
-
-		if(collapse) {
-			ace.addClass(sidebar , 'menu-min');
-			if(save !== false) ace.settings.set('sidebar', 'collapsed');
-		} else {
-			ace.removeClass(sidebar , 'menu-min');
-			if(save !== false) ace.settings.unset('sidebar', 'collapsed');
-		}
-		
-		if(window.jQuery) jQuery(document).trigger('settings.ace', ['sidebar_collapsed' , collapse, sidebar]);
-		
-		if(!window.jQuery) {
-			var toggle_btn = document.querySelector('.sidebar-collapse[data-target="#'+(sidebar.getAttribute('id')||'')+'"]');
-			if(!toggle_btn) toggle_btn = sidebar.querySelector('.sidebar-collapse');
-			if(!toggle_btn) return;
-
-	
-			var icon = toggle_btn.querySelector('[data-icon1][data-icon2]'), icon1, icon2;	
-			if(!icon) return;
-
-			icon1 = icon.getAttribute('data-icon1');//the icon for expanded state
-			icon2 = icon.getAttribute('data-icon2');//the icon for collapsed state
-
-			if(collapse) {
-				ace.removeClass(icon, icon1);
-				ace.addClass(icon, icon2);
-			}
 			else {
-				ace.removeClass(icon, icon2);
-				ace.addClass(icon, icon1);
+				attrList[attrName] = newVal;
 			}
-		}		
-	}
-	/**
-	,
-	select_skin : function(skin) {
-	}
-	*/
-}
-
-
-//check the status of something
-ace.settings.check = function(item, val) {
-	if(! ace.settings.exists(item, val) ) return;//no such setting specified
-	var status = ace.settings.is(item, val);//is breadcrumbs-fixed? or is sidebar-collapsed? etc
-
-	var mustHaveClass = {
-		'navbar-fixed' : 'navbar-fixed-top',
-		'sidebar-fixed' : 'sidebar-fixed',
-		'breadcrumbs-fixed' : 'breadcrumbs-fixed',
-		'sidebar-collapsed' : 'menu-min',
-		'main-container-fixed' : 'container'
-	}
-
-
-	//if an element doesn't have a specified class, but saved settings say it should, then add it
-	//for example, sidebar isn't .fixed, but user fixed it on a previous page
-	//or if an element has a specified class, but saved settings say it shouldn't, then remove it
-	//for example, sidebar by default is minimized (.menu-min hard coded), but user expanded it and now shouldn't have 'menu-min' class
+		}
+		
+		ace.data.set('state', 'id-'+id , JSON.stringify(attrList));
+	},
 	
-	var target = document.getElementById(item);//#navbar, #sidebar, #breadcrumbs
-	if(status != ace.hasClass(target , mustHaveClass[item+'-'+val])) {
-		ace.settings[item.replace('-','_')+'_'+val](null, status);//call the relevant function to make the changes
+	loadState : function(element, attrName) {
+		if( !element || (typeof element == 'string' && !(element = document.getElementById(element))) || !element.hasAttribute('id') ) return false;
+		
+		var id = element.getAttribute('id');
+		var attrList = ace.data.get('state', 'id-'+id) || {};
+		if(typeof attrList == 'string') {
+			try {
+				attrList = JSON.parse(attrList);
+			}
+			catch(e) {
+				attrList = {}
+			}
+		}
+		
+		var setAttr = function(element, attr, val) {
+			var re1 = /class/i
+			var re2 = /checked|disabled|readonly|value/i
+			
+			if(re1.test(attr)) {
+				if(typeof val === 'object') {
+					if('className' in val) element.setAttribute('class', val['className']);
+					for(var key in val) if(val.hasOwnProperty(key)) {
+						var append = val[key];
+						if(append == 1) ace.addClass(element, key);
+						else if(append == -1) ace.removeClass(element, key);
+					}
+				}
+				//else if(typeof ace.addClass(element, val);
+			}
+			else if(re2.test(attr)) element[attr] = val;
+			else element.setAttribute(attr, val);
+		}
+		
+		if(attrName !== undefined) {
+			if(attrList.hasOwnProperty(attrName) && attrList[attrName] !== null) setAttr(element, attrName, attrList[attrName]);
+		}
+		else {
+			for(var name in attrList) {
+				if(attrList.hasOwnProperty(name) && attrList[name] !== null) setAttr(element, name, attrList[name]);
+			}
+		}
+	},
+	
+	clearState : function(element) {
+		var id = null;
+		if(typeof element === 'string') {
+			id = element;
+		}
+		else if('hasAttribute' in element && element.hasAttribute('id')) {
+			id = element.getAttribute('id');
+		}
+		if(id) ace.data.remove('state', 'id-'+id);
 	}
-}
+};
+
+
+
+
+(function() {
+	//detect if it is supported
+	//https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Detecting_CSS_animation_support
+	var animationSupport = function() {
+		var animation = false,
+		animationstring = 'animation',
+		keyframeprefix = '',
+		domPrefixes = 'Webkit Moz O ms Khtml'.split(' '),
+		pfx  = '',
+		elm = document.createElement('div');
+
+		if( elm.style.animationName !== undefined ) { animation = true; }    
+
+		if( animation === false ) {
+		  for( var i = 0; i < domPrefixes.length; i++ ) {
+			if( elm.style[ domPrefixes[i] + 'AnimationName' ] !== undefined ) {
+			  pfx = domPrefixes[ i ];
+			  animationstring = pfx + 'Animation';
+			  keyframeprefix = '-' + pfx.toLowerCase() + '-';
+			  animation = true;
+			  break;
+			}
+		  }
+		}
+		
+		return animation;
+	}
+	
+	ace.vars['animation'] = animationSupport();
+	if( ace.vars['animation'] ) {
+		//based on http://www.backalleycoder.com/2012/04/25/i-want-a-damnodeinserted/
+
+		var animationCSS = "@keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-moz-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-webkit-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-ms-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-o-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}.ace-save-state{animation-duration:10ms;-o-animation-duration:10ms;-ms-animation-duration:10ms;-moz-animation-duration:10ms;-webkit-animation-duration:10ms;animation-delay:0s;-o-animation-delay:0s;-ms-animation-delay:0s;-moz-animation-delay:0s;-webkit-animation-delay:0s;animation-name:nodeInserted;-o-animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted}";
+		var animationNode = document.createElement('style');
+		animationNode.innerHTML = animationCSS;
+		document.head.appendChild(animationNode);
+	
+		var domInsertEvent = function(event) {
+			var element = event.target;
+			if( !element || !ace.hasClass(element, 'ace-save-state') ) return;
+			
+			ace.settings.loadState(element);
+		}
+
+		document.addEventListener('animationstart', domInsertEvent, false);
+		document.addEventListener('MSAnimationStart', domInsertEvent, false);
+		document.addEventListener('webkitAnimationStart', domInsertEvent, false);
+	}
+	else {
+		//if animation events are not supported, wait for document ready event
+		var documentReady = function() {
+			var list = document.querySelectorAll('.ace-save-state');
+			for(var i = 0 ; i < list.length ; i++) ace.settings.loadState(list[i]);
+		}
+		
+		if(document.readyState == 'complete') documentReady();
+		else if(document.addEventListener) document.addEventListener('DOMContentLoaded', documentReady, false);
+		else if(document.attachEvent) document.attachEvent('onreadystatechange', function(){
+			if (document.readyState == 'complete') documentReady();
+		});
+	}
+})();
 
 
 
@@ -272,7 +208,7 @@ ace.data_storage = function(method, undefined) {
 	var storage = null;
 	var type = 0;
 	
-	if((method == 1 || method === undefined) && 'localStorage' in window && window['localStorage'] !== null) {
+	if((method == 1 || method === undefined || method == 0) && 'localStorage' in window && window['localStorage'] !== null) {
 		storage = ace.storage;
 		type = 1;
 	}
@@ -280,9 +216,9 @@ ace.data_storage = function(method, undefined) {
 		storage = ace.cookie;
 		type = 2;
 	}
+	
 
-	//var data = {}
-	this.set = function(namespace, key, value, path, undefined) {
+	this.set = function(namespace, key, value, path, is_obj, undefined) {
 		if(!storage) return;
 		
 		if(value === undefined) {//no namespace here?
@@ -300,7 +236,12 @@ ace.data_storage = function(method, undefined) {
 		else {
 			if(type == 1) {//localStorage
 				if(value == null) storage.remove(prefix+namespace+'_'+key)
-				else storage.set(prefix+namespace+'_'+key, value);
+				else {
+					if(is_obj && typeof value == 'object') {
+						value = JSON.stringify(value);
+					}
+					storage.set(prefix+namespace+'_'+key, value);
+				}
 			}
 			else if(type == 2) {//cookie
 				var val = storage.get(prefix+namespace);
@@ -323,7 +264,7 @@ ace.data_storage = function(method, undefined) {
 		}
 	}
 
-	this.get = function(namespace, key, undefined) {
+	this.get = function(namespace, key, is_obj, undefined) {
 		if(!storage) return null;
 		
 		if(key === undefined) {//no namespace here?
@@ -332,7 +273,11 @@ ace.data_storage = function(method, undefined) {
 		}
 		else {
 			if(type == 1) {//localStorage
-				return storage.get(prefix+namespace+'_'+key);
+				var value = storage.get(prefix+namespace+'_'+key);
+				if(is_obj && value) {
+					try { value = JSON.parse(value) } catch(e) {}
+				}
+				return value;
 			}
 			else if(type == 2) {//cookie
 				var val = storage.get(prefix+namespace);
@@ -362,7 +307,7 @@ ace.data_storage = function(method, undefined) {
 
 //cookie storage
 ace.cookie = {
-	// The following functions are from Cookie.js class in TinyMCE, Moxiecode, used under LGPL.
+	// The following settingFunction are from Cookie.js class in TinyMCE, Moxiecode, used under LGPL.
 
 	/**
 	 * Get a cookie.
@@ -459,20 +404,30 @@ ace.sizeof = function(obj) {
 ace.hasClass = function(elem, className) {	return (" " + elem.className + " ").indexOf(" " + className + " ") > -1; }
 
 ace.addClass = function(elem, className) {
- if (!ace.hasClass(elem, className)) {
-	var currentClass = elem.className;
-	elem.className = currentClass + (currentClass.length? " " : "") + className;
+ var parts = className.split(/\s+/);
+ for(var p = 0; p < parts.length; p++) {
+	if ( parts[p].length > 0 && !ace.hasClass(elem, parts[p]) ) {
+		var currentClass = elem.className;
+		elem.className = currentClass + (currentClass.length ? " " : "") + parts[p];
+	}
  }
 }
 
-ace.removeClass = function(elem, className) {ace.replaceClass(elem, className);}
+ace.removeClass = function(elem, className) {
+ var parts = className.split(/\s+/);
+ for(var p = 0; p < parts.length; p++) {
+	if( parts[p].length > 0 ) ace.replaceClass(elem, parts[p]);
+ }
+ ace.replaceClass(elem, className);
+}
 
 ace.replaceClass = function(elem, className, newClass) {
-	var classToRemove = new RegExp(("(^|\\s)" + className + "(\\s|$)"), "i");
-	elem.className = elem.className.replace(classToRemove, function (match, p1, p2) {
-		return newClass? (p1 + newClass + p2) : " ";
-	}).replace(/^\s+|\s+$/g, "");
+ var classToRemove = new RegExp(("(^|\\s)" + className + "(\\s|$)"), "i");
+ elem.className = elem.className.replace(classToRemove, function (match, p1, p2) {
+	return newClass ? (p1 + newClass + p2) : " ";
+ }).replace(/^\s+|\s+$/g, "");
 }
+
 
 ace.toggleClass = function(elem, className) {
 	if(ace.hasClass(elem, className))
@@ -480,10 +435,13 @@ ace.toggleClass = function(elem, className) {
 	else ace.addClass(elem, className);
 }
 
-ace.isHTTMlElement = function(elem) {
+ace.isHTMlElement = function(elem) {
  return window.HTMLElement ? elem instanceof HTMLElement : ('nodeType' in elem ? elem.nodeType == 1 : false);
 }
 
 
-//data_storage instance used inside ace.settings etc
-ace.data = new ace.data_storage(ace.config.storage_method);
+ //data_storage instance used inside ace.settings etc
+ ace.data = new ace.data_storage(ace.config.storage_method);
+
+})();
+

@@ -68,12 +68,18 @@
    
    .btn-sm {
 	   width: 32px;
+	   padding-left: 6px;
+	   padding-right: 6px;
    }
    .btn-xs {
       width: 24px;
+	  padding-left: 4px;
+	  padding-right: 4px;
    }
    .btn-lg {
       width: 40px;
+	  padding-left: 8px;
+	  padding-right: 8px;
    }
 }
 .ace-spinner.touch-spinner .spinbox-buttons > .btn {
@@ -306,6 +312,9 @@
 		cursor: pointer;
 	}
 	
+	.icon-caret {
+		vertical-align: baseline !important;
+	}
 
 
 	.tree-branch {
@@ -317,10 +326,25 @@
 			position: relative;
 			height: 20px;
 			line-height: 20px;
+			
 			&:hover {
-				background-color: #F0F7FC;
+				background-color: rgba(98, 168, 209 , 0.1);
 			}
 		}
+		
+		//in folderSelect mode
+		.icon-caret + .tree-branch-header {
+			display: inline-block;
+			width: 80%;
+			width: ~"calc(100% - 36px)";
+		}
+		
+
+		&.tree-selected  > .tree-branch-header {
+			background-color: rgba(98, 168, 209 , 0.18);
+		}
+		
+		
 	}
 	
 	.tree-branch .tree-branch-header .tree-branch-name , .tree-item .tree-item-name {
@@ -377,6 +401,11 @@
 		}
 	}
 
+	
+	.tree-branch.tree-selected > .icon-caret + .tree-branch-header > .tree-branch-name > .tree-label {
+		font-weight: bold;
+	}
+
 
 
 	.tree-item {
@@ -385,9 +414,19 @@
 		line-height: 20px;
 		cursor: pointer;
 		
+		max-width: ~"calc(100% - 20px)";
+		
 		&:hover {
-			background-color: #F0F7FC;
+			background-color: rgba(98, 168, 209 , 0.1);
 		}
+		
+		&.tree-selected {
+			& , &:hover {
+				background-color: rgba(98, 168, 209 , 0.16);
+			}
+		}
+		
+		
 	
 		> .tree-item-name {
 			> .@{icon}:first-child {
@@ -425,22 +464,23 @@
 	
 
 	.tree-selected {
-		background-color: rgba(98, 168, 209 , 0.1);
+		//background-color: rgba(98, 168, 209 , 0.1);
 		color: #6398B0;
-		&:hover {
-			background-color: rgba(98, 168, 209 , 0.1);
-		}
+		//&:hover {
+			//background-color: rgba(98, 168, 209 , 0.1);
+		//}
 	}
 
 	.tree-item  , .tree-branch {
-		border: 1px solid #FFF;
+		border-left: 1px solid #FFF;
+		margin: 1px 0;
 	}
 
 	.tree-branch .tree-branch-header {
 		border-radius: 0;
 	}
 	.tree-item  , .tree-branch .tree-branch-header {
-		margin: 0;
+		//margin: 0;
 		padding: 5px;
 		color: #4D6878;
 		
@@ -550,8 +590,39 @@
 		display: inline;
 		veritcal-align: middle;
 	}
+	
+	
+	.icon-open {
+		width: 16px;
+
+		position: relative;
+		z-index: 2;
+		
+		padding-left: 2px;		
+	}
+	
+	.tree .tree-open > .tree-branch-header .icon-open {
+		.rotate(90deg);
+	}
  }
 
+ 
+ .tree-container {
+    background-color: #FFF;
+    border: 1px solid #DDD;
+	border-left-color: @tree-border-color;
+    
+	display: block;
+    padding: 0;
+	
+	max-width: 200px;
+	max-height: 250px;
+
+	
+	.tree::before {
+		margin-left: -1px;
+	}
+ }
 
 }
 .enable_plugin_fuelux_treeview();

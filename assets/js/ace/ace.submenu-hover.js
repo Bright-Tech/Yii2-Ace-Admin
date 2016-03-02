@@ -7,7 +7,7 @@
 
  if( ace.vars['very_old_ie'] ) return;
  //ignore IE7 & below
- 
+
  var hasTouch = ace.vars['touch'];
  var nativeScroll = ace.vars['old_ie'] || hasTouch;
  
@@ -51,8 +51,9 @@
 	
 	var scroll_right = false;
 	//scroll style class
+	var hasHoverDelay = self.settings.sub_hover_delay || false;
 	
-	if(hasTouch) self.settings.sub_hover_delay = parseInt(Math.max(self.settings.sub_hover_delay, 2500));//for touch device, delay is at least 2.5sec
+	if(hasTouch && hasHoverDelay) self.settings.sub_hover_delay = parseInt(Math.max(self.settings.sub_hover_delay, 2500));//for touch device, delay is at least 2.5sec
 
 	var $window = $(window);
 	//navbar used for adding extra offset from top when adjusting submenu
@@ -174,7 +175,7 @@
 		}
 		
 		
-		var sub_hide = getSubHide(this);
+		var sub_hide = hasHoverDelay ? getSubHide(this) : null;
 		//var show_sub = false;
 
 		if(sub) {
@@ -183,7 +184,7 @@
 			
 			var newScroll = ace.helper.scrollTop();
 			//if submenu is becoming visible for first time or document has been scrolled, then adjust menu
-			if( !sub_hide.is_visible() || (!hasTouch && newScroll != currentScroll) || old_ie ) {
+			if( (hasHoverDelay && !sub_hide.is_visible()) || (!hasTouch && newScroll != currentScroll) || old_ie ) {
 				//try to move/adjust submenu if the parent is a li.hover or if submenu is minimized
 				//if( is_element_pos(sub, 'absolute') ) {//for example in small device .hover > .submenu may not be absolute anymore!
 					$(sub).addClass('can-scroll');
@@ -204,7 +205,7 @@
 		 }
 		}
 		//if(show_sub) 
-		sub_hide.show();
+		hasHoverDelay && sub_hide.show();
 		
 	 }).on(event_2, '.nav-list li, .sidebar-shortcuts', function (e) {
 		sidebar_vars = $sidebar.ace_sidebar('vars');
@@ -213,7 +214,7 @@
 
 		if( !$(this).hasClass('hover-show') ) return;
 
-		getSubHide(this).hideDelay();
+		hasHoverDelay && getSubHide(this).hideDelay();
 	 });
 	 
 	

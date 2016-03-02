@@ -16,7 +16,7 @@ input.tt-hint , .form-group input.tt-hint {
   background-color: #FFF !important;
   color: #B0B0B0 !important;
 }
-.tt-dropdown-menu {
+.tt-menu {
   text-align: left;
 
   position: absolute;
@@ -39,7 +39,7 @@ input.tt-hint , .form-group input.tt-hint {
   font-size: @font-size-typeahead-suggestion;
   line-height: 24px;
   
-  &.tt-cursor {
+  &.tt-selectable:hover , &.tt-cursor {
 	color: #FFF;
 	background-color: #4F99C6;
 	cursor: pointer;
@@ -50,7 +50,7 @@ input.tt-hint , .form-group input.tt-hint {
   }
 }
 
-input.typeahead.scrollable ~ .tt-dropdown-menu {
+input.typeahead.scrollable ~ .tt-menu {
   max-height: 200px;
   overflow-y: auto;
 }

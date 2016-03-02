@@ -59,11 +59,11 @@ It's used for Ace demo only, to style the button that launches help, help conten
 
 
 .onpage-help-toggle-text {
-  -moz-animation:    pulsating 2s 2 linear 1s;
-  -webkit-animation: pulsating 2s 2 linear 1s;
-  -o-animation:      pulsating 2s 2 linear 1s;
-  -ms-animation:     pulsating 2s 2 linear 1s;
-  animation:         pulsating 2s 2 linear 1s;
+  -moz-animation:    pulsating 2s 3 linear 1s;
+  -webkit-animation: pulsating 2s 3 linear 1s;
+  -o-animation:      pulsating 2s 3 linear 1s;
+  -ms-animation:     pulsating 2s 3 linear 1s;
+  animation:         pulsating 2s 3 linear 1s;
 }
 
 

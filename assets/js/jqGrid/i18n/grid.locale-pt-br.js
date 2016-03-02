@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid Brazilian-Portuguese Translation
  * Sergio Righi sergio.righi@gmail.com
@@ -10,27 +9,61 @@
  *
  * Updated by Fabio Ferreira da Silva fabio_ferreiradasilva@yahoo.com.br
  * 
+ * Updated by Anderson Pimentel anderson.pimentel[at]gmail.com
  *
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["pt-br"] = {
 	defaults : {
 		recordtext: "Ver {0} - {1} de {2}",
 	    emptyrecords: "Nenhum registro para visualizar",
 		loadtext: "Carregando...",
-		pgtext : "Página {0} de {1}"
+		pgtext : "Página {0} de {1}",
+		savetext: "Salvando...",
+		pgfirst : "Primeira Página",
+		pglast : "Última Página",
+		pgnext : "Próxima Página",
+		pgprev : "Página Anterior",
+		pgrecs : "Registros por Página",
+		showhide: "Mostrar/Ocultar Grid",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
 	},
 	search : {
 	    caption: "Procurar...",
 	    Find: "Procurar",
-	    Reset: "Resetar",
+	    Reset: "Limpar",
 	    odata: [{ oper:'eq', text:"igual"},{ oper:'ne', text:"diferente"},{ oper:'lt', text:"menor"},{ oper:'le', text:"menor ou igual"},{ oper:'gt', text:"maior"},{ oper:'ge', text:"maior ou igual"},{ oper:'bw', text:"inicia com"},{ oper:'bn', text:"não inicia com"},{ oper:'in', text:"está em"},{ oper:'ni', text:"não está em"},{ oper:'ew', text:"termina com"},{ oper:'en', text:"não termina com"},{ oper:'cn', text:"contém"},{ oper:'nc', text:"não contém"},{ oper:'nu', text:"nulo"},{ oper:'nn', text:"não nulo"}],
 	    groupOps: [	{ op: "AND", text: "todos" },{ op: "OR",  text: "qualquer um" }	],
-		operandTitle : "Click to select search operation.",
-		resetTitle : "Reset Search Value"
+		operandTitle : "Clique para escolher a operação de pesquisa.",
+		resetTitle : "Limpar valor de pesquisa"
 	},
 	edit : {
 	    addCaption: "Incluir",
@@ -77,11 +110,16 @@ $.extend($.jgrid,{
 	    searchtext: " ",
 	    searchtitle: "Procurar registros",
 	    refreshtext: "",
-	    refreshtitle: "Recarregando tabela",
+	    refreshtitle: "Recarregar tabela",
 	    alertcap: "Aviso",
 	    alerttext: "Por favor, selecione um registro",
 		viewtext: "",
-		viewtitle: "Ver linha selecionada"
+		viewtitle: "Ver linha selecionada",
+		savetext: "",
+		savetitle: "Salvar linha",
+		canceltext: "",
+		canceltitle : "Cancelar edição da linha",
+		selectcaption : "Actions..."
 	},
 	col : {
 	    caption: "Mostrar/Esconder Colunas",
@@ -125,7 +163,8 @@ $.extend($.jgrid,{
 	            UniversalSortableDateTime: "Y-m-d H:i:sO",
 	            YearMonth: "F, Y"
 	        },
-	        reformatAfterEdit : false
+	        reformatAfterEdit : false,
+			userLocalTime : false
 		},
 		baseLinkUrl: '',
 		showAction: '',
@@ -133,5 +172,5 @@ $.extend($.jgrid,{
 	    checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

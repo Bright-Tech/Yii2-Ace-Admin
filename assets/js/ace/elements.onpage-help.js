@@ -1,3 +1,7 @@
+/**
+ <b>Onpage Help</b>. You can use this to provide help dialogs on your application pages. See docs for more info.
+*/
+
 window.Onpage_Help = function(options) {
 	var $ = window.jQuery || null;
 	if($ == null) return;
@@ -705,4 +709,4 @@ window.Onpage_Help = function(options) {
 		});
 	}
 
-}
+};

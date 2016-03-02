@@ -207,19 +207,20 @@
 	
 	> li > a {
 		//icon and badges
-		> .badge {
+		.badge {
 			padding: 1px 5px;
 			line-height: 15px;
 			opacity: 0.75;
+			vertical-align: initial;
 		}
 
-		> .@{icon} { 
+		.@{icon} { 
 			opacity: 0.75; 
 		}
 	}
 
 	> li.active > a {
-		> .badge , > .@{icon} {
+		.badge , .@{icon} {
 			opacity: 1;
 		}
 	}

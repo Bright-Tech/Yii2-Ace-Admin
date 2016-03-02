@@ -8,9 +8,12 @@
 		var $defaults = {
 			'open-icon' : ace.vars['icon'] + 'fa fa-folder-open',
 			'close-icon' : ace.vars['icon'] + 'fa fa-folder',
-			'selectable' : true,
+			'toggle-icon': ace.vars['icon'] + 'fa fa-play',
 			'selected-icon' : ace.vars['icon'] + 'fa fa-check',
 			'unselected-icon' : ace.vars['icon'] + 'fa fa-times',
+			'base-icon' : ace.vars['icon'] + 'fa',
+			'folder-open-icon' : 'fa fa-plus-square-o',
+			'folder-close-icon' : 'fa fa-plus-minus-o',
 			'loadingHTML': 'Loading...'
 		}
 
@@ -23,6 +26,7 @@
 			$this.addClass('tree').attr('role', 'tree');
 			$this.html(
 			'<li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">\
+				'+($options['folderSelect'] ? '<i class="icon-caret '+$options['folder-open-icon']+'"></i>&nbsp;' : '')+'\
 				<div class="tree-branch-header">\
 					<span class="tree-branch-name">\
 						<i class="icon-folder '+$options['close-icon']+'"></i>\
@@ -31,7 +35,7 @@
 				</div>\
 				<ul class="tree-branch-children" role="group"></ul>\
 				<div class="tree-loader" role="alert">'+$options['loadingHTML']+'</div>\
-			</div>\
+			</li>\
 			<li class="tree-item hide" data-template="treeitem" role="treeitem">\
 				<span class="tree-item-name">\
 				  '+($options['unselected-icon'] == null ? '' : '<i class="icon-item '+$options['unselected-icon']+'"></i>')+'\

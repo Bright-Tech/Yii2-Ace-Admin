@@ -23,9 +23,12 @@
 			});
 		}
 
-		this.close = function() {
+		this.closeFast = function() {
+			this.close(0);
+		}
+		this.close = function(closeSpeed) {
 			var $box = this.$box;
-			var closeSpeed = 300;
+			var closeSpeed   = typeof closeSpeed === 'undefined' ? 300 : closeSpeed;
 			$box.fadeOut(closeSpeed , function(){
 					$box.trigger('closed.ace.widget');
 					$box.remove();
@@ -33,20 +36,25 @@
 			)
 		}
 		
-		this.toggle = function(type, button) {
+		this.toggleFast = function() {
+			this.toggle(null, null, 0, 0);
+		}
+		
+		this.toggle = function(type, button, expandSpeed, collapseSpeed) {
 			var $box = this.$box;
 			var $body = $box.find('.widget-body').eq(0);
 			var $icon = null;
 			
-			var event_name = typeof type !== 'undefined' ? type : ($box.hasClass('collapsed') ? 'show' : 'hide');
+			var event_name = type || ($box.hasClass('collapsed') ? 'show' : 'hide');
 			var event_complete_name = event_name == 'show' ? 'shown' : 'hidden';
 
-			if(typeof button === 'undefined') {
+			if( !button ) {
 				button = $box.find('> .widget-header a[data-action=collapse]').eq(0);
 				if(button.length == 0) button = null;
 			}
 
 			if(button) {
+			
 				$icon = button.find(ace.vars['.icon']).eq(0);
 
 				var $match
@@ -61,8 +69,9 @@
 				}
 			}
 
-			var expandSpeed   = 250;
-			var collapseSpeed = 200;
+			var expandSpeed   = typeof expandSpeed === 'undefined' ? 250 : expandSpeed;
+			var collapseSpeed = typeof collapseSpeed === 'undefined' ? 200 : collapseSpeed;
+			
 
 			if( event_name == 'show' ) {
 				if($icon) $icon.removeClass($icon_down).addClass($icon_up);

@@ -31,6 +31,8 @@ if ( $.fn.dataTable.Api ) {
 			var i, ien, node, button;
 			var clickHandler = function ( e ) {
 				e.preventDefault();
+				//return if target is disabled
+				if($(e.target).parent().hasClass('disabled')) return false;//ACE
 				if ( e.data.action !== 'ellipsis' ) {
 					api.page( e.data.action ).draw( false );
 				}
@@ -139,6 +141,7 @@ else {
 			"fnInit": function( oSettings, nPaging, fnDraw ) {
 				var oLang = oSettings.oLanguage.oPaginate;
 				var fnClickHandler = function ( e ) {
+					alert(1);
 					e.preventDefault();
 					if ( oSettings.oApi._fnPageChange(oSettings, e.data.action) ) {
 						fnDraw( oSettings );

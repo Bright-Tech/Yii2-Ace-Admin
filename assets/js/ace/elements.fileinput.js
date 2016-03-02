@@ -49,8 +49,13 @@
 		this.multi = this.$element.attr('multiple') && multiplible;
 		this.well_style = this.settings.style == 'well';
 
-		if(this.well_style) this.$element.parent().addClass('ace-file-multiple');
-		 else this.$element.parent().removeClass('ace-file-multiple');
+		if(this.well_style) {
+			if( !this.settings.thumbnail ) this.settings.thumbnail = 'small';
+			this.$element.parent().addClass('ace-file-multiple');
+		}
+		else {
+			this.$element.parent().removeClass('ace-file-multiple');
+		}
 
 
 		this.$element.parent().find(':not(input[type=file])').remove();//remove all except our input, good for when changing settings
@@ -307,24 +312,35 @@
 		
 		var deferred = new $.Deferred;
 		
-		var getImage = function(src) {
+		var getImage = function(src, $file) {
 			$span.prepend("<img class='middle' style='display:none;' />");
 			var img = $span.find('img:last').get(0);
 		
 			$(img).one('load', function() {
-				imgLoaded.call(null, img);
+				imgLoaded.call(null, img, $file);
 			}).one('error', function() {
 				imgFailed.call(null, img);
 			});
 
 			img.src = src;
 		}
-		var imgLoaded = function(img) {
+		var imgLoaded = function(img, $file) {
 			//if image loaded successfully
-			var size = 50;
-			if(self.settings.thumbnail == 'large') size = 150;
-			else if(self.settings.thumbnail == 'fit') size = $span.width();
-			$span.addClass(size > 50 ? 'large' : '');
+			
+			var size = self.settings['previewSize'];
+			
+			if(!size) {
+				if(self.settings['previewWidth'] || self.settings['previewHeight']) {
+					size = {previewWidth: self.settings['previewWidth'], previewHeight: self.settings['previewHeight']}
+				}
+				else {
+					size = 50;
+					if(self.settings.thumbnail == 'large') size = 150;
+				}
+			}
+			if(self.settings.thumbnail == 'fit') size = $span.width();
+			else if(typeof size == 'number') size = parseInt(Math.min(size, $span.width()));
+
 
 			var thumb = get_thumbnail(img, size/**, file.type*/);
 			if(thumb == null) {
@@ -333,13 +349,31 @@
 				deferred.reject({code:Ace_File_Input.error['THUMBNAIL_FAILED']});
 				return;
 			}
+			
+			
+			var showPreview = true;
+			//add width/height info to "file" and trigger preview finished event for each image!
+			if($file && $file instanceof File) {
+				$file.width = thumb.width;
+				$file.height = thumb.height;
+				self.$element.trigger('file.preview.ace', {'file': $file});
+				
+				var event
+				self.$element.trigger( event = new $.Event('file.preview.ace'), {'file': $file} );
+				if ( event.isDefaultPrevented() ) showPreview = false;
+			}
 
-			var w = thumb.w, h = thumb.h;
-			if(self.settings.thumbnail == 'small') {w=h=size;};
-			$(img).css({'background-image':'url('+thumb.src+')' , width:w, height:h})
-					.data('thumb', thumb.src)
-					.attr({src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=='})
-					.show()
+
+			if(showPreview) {
+				var w = thumb.previewWidth, h = thumb.previewHeight;
+				if(self.settings.thumbnail == 'small') {w=h=parseInt(Math.max(w,h))}
+				else $span.addClass('large');
+
+				$(img).css({'background-image':'url('+thumb.src+')' , width:w, height:h})
+						.data('thumb', thumb.src)
+						.attr({src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=='})
+						.show()
+			}
 
 			///////////////////
 			deferred.resolve();
@@ -353,7 +387,7 @@
 		if(hasFile && file instanceof File) {
 			var reader = new FileReader();
 			reader.onload = function (e) {
-				getImage(e.target.result);
+				getImage(e.target.result, file);
 			}
 			reader.onerror = function (e) {
 				deferred.reject({code:Ace_File_Input.error['FILE_LOAD_FAILED']});
@@ -362,7 +396,7 @@
 		}
 		else {
 			if(file instanceof Object && file.hasOwnProperty('path')) {
-				getImage(file.path);//file is a file name (path) --- this is used to pre-show user-selected image
+				getImage(file.path, null);//file is a file name (path) --- this is used to pre-show user-selected image
 			}
 		}
 		
@@ -370,29 +404,49 @@
 	}
 
 	var get_thumbnail = function(img, size, type) {
-		var w = img.width, h = img.height;
+		var imgWidth = img.width, imgHeight = img.height;
 		
 		//**IE10** is not giving correct width using img.width so we use $(img).width()
-		w = w > 0 ? w : $(img).width()
-		h = h > 0 ? h : $(img).height()
+		imgWidth = imgWidth > 0 ? imgWidth : $(img).width()
+		imgHeight = imgHeight > 0 ? imgHeight : $(img).height()
 
-		if(w > size || h > size) {
-		  if(w > h) {
-			h = parseInt(size/w * h);
-			w = size;
-		  } else {
-			w = parseInt(size/h * w);
-			h = size;
-		  }
+		var previewSize = false, previewHeight = false, previewWidth = false;
+		if(typeof size == 'number') previewSize = size;
+		else if(size instanceof Object) {
+			if(size['previewWidth'] && !size['previewHeight']) previewWidth = size['previewWidth'];
+			else if(size['previewHeight'] && !size['previewWidth']) previewHeight = size['previewHeight'];
+			else if(size['previewWidth'] && size['previewHeight']) {
+				previewWidth = size['previewWidth'];
+				previewHeight = size['previewHeight'];
+			}
 		}
-
-
+		
+		if(previewSize) {
+			if(imgWidth > imgHeight) {
+				previewWidth = previewSize;
+				previewHeight = parseInt(imgHeight/imgWidth * previewWidth);
+			} else {
+				previewHeight = previewSize;
+				previewWidth = parseInt(imgWidth/imgHeight * previewHeight);
+			}
+		}
+		else {
+			if(!previewHeight && previewWidth) {
+				previewHeight = parseInt(imgHeight/imgWidth * previewWidth);
+			}
+			else if(previewHeight && !previewWidth) {
+				previewWidth = parseInt(imgWidth/imgHeight * previewHeight);
+			}
+		}
+		
+		
+	
 		var dataURL
 		try {
 			var canvas = document.createElement('canvas');
-			canvas.width = w; canvas.height = h;
+			canvas.width = previewWidth; canvas.height = previewHeight;
 			var context = canvas.getContext('2d');
-			context.drawImage(img, 0, 0, img.width, img.height, 0, 0, w, h);
+			context.drawImage(img, 0, 0, imgWidth, imgHeight, 0, 0, previewWidth, previewHeight);
 			dataURL = canvas.toDataURL(/*type == 'image/jpeg' ? type : 'image/png', 10*/)
 		} catch(e) {
 			dataURL = null;
@@ -405,7 +459,7 @@
 		if(! dataURL) return null;
 		
 
-		return {src: dataURL, w:w, h:h};
+		return {src: dataURL, previewWidth: previewWidth, previewHeight: previewHeight, width: imgWidth, height: imgHeight};
 	}
 	
 
@@ -583,6 +637,10 @@
 		allowMime: null,
 		denyMime: null,
 		maxSize: false,
+		
+		previewSize: false,
+		previewWidth: false,
+		previewHeight: false,
 		
 		//callbacks
 		before_change: null,

@@ -215,59 +215,41 @@ div.dataTables_scrollFoot table {
 
 
 
+
+
 ///
-//for tableTools printing
-.DTTT_Print .main-content {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-.DTTT_Print .navbar-fixed-top + .main-container {
-  padding-top: 0;
-}
-
-
 //table Tools extension
 .tableTools-container {
 	margin-bottom: 8px;
+	position: relative;
 }
 
-.tableTools-alert.gritter-item-wrapper {
+.gritter-item-wrapper.dt-button-info {
 	padding: 12px 11px 8px;
 	z-index: 1999;
-}
-
-//ColVis extension
-ul.ColVis_collection {
-	z-index: 2002;
-	
-	> li > a {
-		padding: 0;
-		&:focus {
-			outline: none;
-		}
-	}
-	
-	> li.ColVis_Special {
-		border-top: 1px solid #DDD;
-		> a {
-			padding: 6px 11px 7px;
-			text-align: center;
-		}
-	}
-	
-	label {
-		margin: auto;
-		padding: 6px 11px 7px;
-		display: block;
-		cursor: pointer;
+	> h2 {
+		margin-top: 0;
 	}
 }
 
-div.ColVis_catcher {
-	position: absolute;
-	z-index: 1101;
+
+
+.dt-button-collection .dropdown-menu {
+ display: block;
+ z-index: 1101;
+ 
+ > li > a {
+	color: #888;
+	text-decoration: line-through;
+ }
+ > li > a.active {
+	color : #333;
+	text-decoration: none;
+ }
 }
-div.ColVis_collectionBackground {
+
+
+div.dt-button-background {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -275,12 +257,37 @@ div.ColVis_collectionBackground {
 	width: 100%;
 	background-color: black;
 	z-index: 1100;
+	opacity: 0.1;
+}
+
+
+.dataTable>tbody>tr.selected>td {
+ background-color:@state-success-bg;
+}
+.dataTable>tbody>tr.selected:hover>td {
+ background-color: darken(@state-success-bg, 5%);
 }
 
 
 
 
-
+///
+div.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 60px;
+    margin-left: -40%;
+    margin-top: -25px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+    font-size: 1.2em;
+    background-color: white;
+	border: 2px solid #DDD;
+    background-color: rgba(255,255,255,0.66);
+}
 
 
 }

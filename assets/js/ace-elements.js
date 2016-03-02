@@ -1,5 +1,5 @@
 /*!
- * Ace v1.3.3
+ * Ace v1.3.5
  */
 
 if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires jQuery') }
@@ -27,6 +27,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		var active = false;
 		var created = false;
 
+		
 		var $content_wrap = null, content_wrap = null;
 		var $track = null, $bar = null, track = null, bar = null;
 		var bar_style = null;
@@ -65,9 +66,13 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		
 		var is_dirty = true;//to prevent consecutive 'reset' calls
 		
+		this.ref = function() {
+			return this;
+		}
+		
 		this.create = function(_settings) {
 			if(created) return;
-			//if(disabled) return;
+
 			if(_settings) settings = $.extend({}, $.fn.ace_scroll.defaults, _settings);
 
 			this.size = parseInt(this.$element.attr('data-size')) || settings.size || 200;
@@ -250,8 +255,6 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 			
 			//some mobile browsers don't have mouseenter
 			this.$element.on('mouseenter.ace_scroll touchstart.ace_scroll', function(e) {
-				//if(ace.vars['old_ie']) return;//IE8 has a problem triggering event two times and strangely wrong values for this.size especially in fullscreen widget!
-				
 				is_dirty = true;
 				if(observeContent) checkContentChanges(true);
 				else if(settings.hoverReset) self.reset(true);
@@ -406,13 +409,19 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		}
 		this.update = function(_settings) {
 			if(_settings) settings = $.extend({}, settings, _settings);
-		
-			this.size = _settings.size || this.size;
+
+			this.size = settings.size || this.size;
 			
-			this.lock = _settings.mouseWheelLock || this.lock;
-			this.lock_anyway = _settings.lockAnyway || this.lock_anyway;
+			this.lock = settings.mouseWheelLock || this.lock;
+			this.lock_anyway = settings.lockAnyway || this.lock_anyway;
 			
-			if(_settings.styleClass != undefined) {
+			hideOnIdle = settings.hideOnIdle || hideOnIdle;
+			hideDelay = settings.hideDelay || hideDelay;
+			observeContent = settings.observeContent || false;
+			
+			dragEvent = settings.dragEvent || false;
+			
+			if(typeof _settings.styleClass !== 'undefined') {
 				if(styleClass) $track.removeClass(styleClass);
 				styleClass = _settings.styleClass;
 				if(styleClass) $track.addClass(styleClass);
@@ -842,8 +851,13 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		this.multi = this.$element.attr('multiple') && multiplible;
 		this.well_style = this.settings.style == 'well';
 
-		if(this.well_style) this.$element.parent().addClass('ace-file-multiple');
-		 else this.$element.parent().removeClass('ace-file-multiple');
+		if(this.well_style) {
+			if( !this.settings.thumbnail ) this.settings.thumbnail = 'small';
+			this.$element.parent().addClass('ace-file-multiple');
+		}
+		else {
+			this.$element.parent().removeClass('ace-file-multiple');
+		}
 
 
 		this.$element.parent().find(':not(input[type=file])').remove();//remove all except our input, good for when changing settings
@@ -1100,24 +1114,35 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		
 		var deferred = new $.Deferred;
 		
-		var getImage = function(src) {
+		var getImage = function(src, $file) {
 			$span.prepend("<img class='middle' style='display:none;' />");
 			var img = $span.find('img:last').get(0);
 		
 			$(img).one('load', function() {
-				imgLoaded.call(null, img);
+				imgLoaded.call(null, img, $file);
 			}).one('error', function() {
 				imgFailed.call(null, img);
 			});
 
 			img.src = src;
 		}
-		var imgLoaded = function(img) {
+		var imgLoaded = function(img, $file) {
 			//if image loaded successfully
-			var size = 50;
-			if(self.settings.thumbnail == 'large') size = 150;
-			else if(self.settings.thumbnail == 'fit') size = $span.width();
-			$span.addClass(size > 50 ? 'large' : '');
+			
+			var size = self.settings['previewSize'];
+			
+			if(!size) {
+				if(self.settings['previewWidth'] || self.settings['previewHeight']) {
+					size = {previewWidth: self.settings['previewWidth'], previewHeight: self.settings['previewHeight']}
+				}
+				else {
+					size = 50;
+					if(self.settings.thumbnail == 'large') size = 150;
+				}
+			}
+			if(self.settings.thumbnail == 'fit') size = $span.width();
+			else if(typeof size == 'number') size = parseInt(Math.min(size, $span.width()));
+
 
 			var thumb = get_thumbnail(img, size/**, file.type*/);
 			if(thumb == null) {
@@ -1126,13 +1151,31 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 				deferred.reject({code:Ace_File_Input.error['THUMBNAIL_FAILED']});
 				return;
 			}
+			
+			
+			var showPreview = true;
+			//add width/height info to "file" and trigger preview finished event for each image!
+			if($file && $file instanceof File) {
+				$file.width = thumb.width;
+				$file.height = thumb.height;
+				self.$element.trigger('file.preview.ace', {'file': $file});
+				
+				var event
+				self.$element.trigger( event = new $.Event('file.preview.ace'), {'file': $file} );
+				if ( event.isDefaultPrevented() ) showPreview = false;
+			}
 
-			var w = thumb.w, h = thumb.h;
-			if(self.settings.thumbnail == 'small') {w=h=size;};
-			$(img).css({'background-image':'url('+thumb.src+')' , width:w, height:h})
-					.data('thumb', thumb.src)
-					.attr({src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=='})
-					.show()
+
+			if(showPreview) {
+				var w = thumb.previewWidth, h = thumb.previewHeight;
+				if(self.settings.thumbnail == 'small') {w=h=parseInt(Math.max(w,h))}
+				else $span.addClass('large');
+
+				$(img).css({'background-image':'url('+thumb.src+')' , width:w, height:h})
+						.data('thumb', thumb.src)
+						.attr({src:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=='})
+						.show()
+			}
 
 			///////////////////
 			deferred.resolve();
@@ -1146,7 +1189,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		if(hasFile && file instanceof File) {
 			var reader = new FileReader();
 			reader.onload = function (e) {
-				getImage(e.target.result);
+				getImage(e.target.result, file);
 			}
 			reader.onerror = function (e) {
 				deferred.reject({code:Ace_File_Input.error['FILE_LOAD_FAILED']});
@@ -1155,7 +1198,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		}
 		else {
 			if(file instanceof Object && file.hasOwnProperty('path')) {
-				getImage(file.path);//file is a file name (path) --- this is used to pre-show user-selected image
+				getImage(file.path, null);//file is a file name (path) --- this is used to pre-show user-selected image
 			}
 		}
 		
@@ -1163,29 +1206,49 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 	}
 
 	var get_thumbnail = function(img, size, type) {
-		var w = img.width, h = img.height;
+		var imgWidth = img.width, imgHeight = img.height;
 		
 		//**IE10** is not giving correct width using img.width so we use $(img).width()
-		w = w > 0 ? w : $(img).width()
-		h = h > 0 ? h : $(img).height()
+		imgWidth = imgWidth > 0 ? imgWidth : $(img).width()
+		imgHeight = imgHeight > 0 ? imgHeight : $(img).height()
 
-		if(w > size || h > size) {
-		  if(w > h) {
-			h = parseInt(size/w * h);
-			w = size;
-		  } else {
-			w = parseInt(size/h * w);
-			h = size;
-		  }
+		var previewSize = false, previewHeight = false, previewWidth = false;
+		if(typeof size == 'number') previewSize = size;
+		else if(size instanceof Object) {
+			if(size['previewWidth'] && !size['previewHeight']) previewWidth = size['previewWidth'];
+			else if(size['previewHeight'] && !size['previewWidth']) previewHeight = size['previewHeight'];
+			else if(size['previewWidth'] && size['previewHeight']) {
+				previewWidth = size['previewWidth'];
+				previewHeight = size['previewHeight'];
+			}
 		}
-
-
+		
+		if(previewSize) {
+			if(imgWidth > imgHeight) {
+				previewWidth = previewSize;
+				previewHeight = parseInt(imgHeight/imgWidth * previewWidth);
+			} else {
+				previewHeight = previewSize;
+				previewWidth = parseInt(imgWidth/imgHeight * previewHeight);
+			}
+		}
+		else {
+			if(!previewHeight && previewWidth) {
+				previewHeight = parseInt(imgHeight/imgWidth * previewWidth);
+			}
+			else if(previewHeight && !previewWidth) {
+				previewWidth = parseInt(imgWidth/imgHeight * previewHeight);
+			}
+		}
+		
+		
+	
 		var dataURL
 		try {
 			var canvas = document.createElement('canvas');
-			canvas.width = w; canvas.height = h;
+			canvas.width = previewWidth; canvas.height = previewHeight;
 			var context = canvas.getContext('2d');
-			context.drawImage(img, 0, 0, img.width, img.height, 0, 0, w, h);
+			context.drawImage(img, 0, 0, imgWidth, imgHeight, 0, 0, previewWidth, previewHeight);
 			dataURL = canvas.toDataURL(/*type == 'image/jpeg' ? type : 'image/png', 10*/)
 		} catch(e) {
 			dataURL = null;
@@ -1198,7 +1261,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		if(! dataURL) return null;
 		
 
-		return {src: dataURL, w:w, h:h};
+		return {src: dataURL, previewWidth: previewWidth, previewHeight: previewHeight, width: imgWidth, height: imgHeight};
 	}
 	
 
@@ -1376,6 +1439,10 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		allowMime: null,
 		denyMime: null,
 		maxSize: false,
+		
+		previewSize: false,
+		previewWidth: false,
+		previewHeight: false,
 		
 		//callbacks
 		before_change: null,
@@ -2171,9 +2238,12 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 		var $defaults = {
 			'open-icon' : ace.vars['icon'] + 'fa fa-folder-open',
 			'close-icon' : ace.vars['icon'] + 'fa fa-folder',
-			'selectable' : true,
+			'toggle-icon': ace.vars['icon'] + 'fa fa-play',
 			'selected-icon' : ace.vars['icon'] + 'fa fa-check',
 			'unselected-icon' : ace.vars['icon'] + 'fa fa-times',
+			'base-icon' : ace.vars['icon'] + 'fa',
+			'folder-open-icon' : 'fa fa-plus-square-o',
+			'folder-close-icon' : 'fa fa-plus-minus-o',
 			'loadingHTML': 'Loading...'
 		}
 
@@ -2186,6 +2256,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 			$this.addClass('tree').attr('role', 'tree');
 			$this.html(
 			'<li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">\
+				'+($options['folderSelect'] ? '<i class="icon-caret '+$options['folder-open-icon']+'"></i>&nbsp;' : '')+'\
 				<div class="tree-branch-header">\
 					<span class="tree-branch-name">\
 						<i class="icon-folder '+$options['close-icon']+'"></i>\
@@ -2194,7 +2265,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Ace\'s JavaScript requires
 				</div>\
 				<ul class="tree-branch-children" role="group"></ul>\
 				<div class="tree-loader" role="alert">'+$options['loadingHTML']+'</div>\
-			</div>\
+			</li>\
 			<li class="tree-item hide" data-template="treeitem" role="treeitem">\
 				<span class="tree-item-name">\
 				  '+($options['unselected-icon'] == null ? '' : '<i class="icon-item '+$options['unselected-icon']+'"></i>')+'\

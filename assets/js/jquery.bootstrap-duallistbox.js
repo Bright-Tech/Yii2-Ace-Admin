@@ -1,3 +1,11 @@
+/*
+ *  Bootstrap Duallistbox - v3.0.5
+ *  A responsive dual listbox widget optimized for Twitter Bootstrap. It works on all modern browsers and on touch devices.
+ *  http://www.virtuosoft.eu/code/bootstrap-duallistbox/
+ *
+ *  Made by István Ujj-Mészáros
+ *  Under Apache License v2.0 License
+ */
 ;(function ($, window, document, undefined) {
   // Create the defaults once
   var pluginName = 'bootstrapDualListbox',
@@ -138,10 +146,11 @@
 
     dualListbox.elements['select'+selectIndex].empty().scrollTop(0);
     var regex = new RegExp($.trim(dualListbox.elements['filterInput'+selectIndex].val()), 'gi'),
+      allOptions = dualListbox.element.find('option'),
       options = dualListbox.element;
 
     if (selectIndex === 1) {
-      options = options.find('option').not(':selected');
+      options = allOptions.not(':selected');
     } else  {
       options = options.find('option:selected');
     }
@@ -153,16 +162,17 @@
         isFiltered = false;
         dualListbox.elements['select'+selectIndex].append($item.clone(true).prop('selected', $item.data('_selected')));
       }
-      dualListbox.element.find('option').eq($item.data('original-index')).data('filtered'+selectIndex, isFiltered);
+      allOptions.eq($item.data('original-index')).data('filtered'+selectIndex, isFiltered);
     });
 
     refreshInfo(dualListbox);
   }
 
   function saveSelections(dualListbox, selectIndex) {
+    var options = dualListbox.element.find('option');
     dualListbox.elements['select'+selectIndex].find('option').each(function(index, item) {
       var $item = $(item);
-      dualListbox.element.find('option').eq($item.data('original-index')).data('_selected', $item.prop('selected'));
+      options.eq($item.data('original-index')).data('_selected', $item.prop('selected'));
     });
   }
 
@@ -422,16 +432,16 @@
         this.container.find('.clear1, .clear2').removeClass('btn-default btn-xs').addClass('btn-mini');
         this.container.find('input, select').removeClass('form-control');
         this.container.find('.btn').removeClass('btn-default');
-        this.container.find('.moveall > i, .move > i').removeClass('glyphicon glyphicon-arrow-right').addClass('icon-arrow-right');
-        this.container.find('.removeall > i, .remove > i').removeClass('glyphicon glyphicon-arrow-left').addClass('icon-arrow-left');
+        this.container.find('.moveall > i, .move > i').removeClass('fa fa-arrow-right').addClass('icon-arrow-right');//ACE
+        this.container.find('.removeall > i, .remove > i').removeClass('fa fa-arrow-left').addClass('icon-arrow-left');//ACE
       } else {
         this.container.removeClass('row-fluid bs2compatible').addClass('row');
         this.container.find('.box1, .box2').removeClass('span6').addClass('col-md-6');
         this.container.find('.clear1, .clear2').removeClass('btn-mini').addClass('btn-default btn-xs');
         this.container.find('input, select').addClass('form-control');
         this.container.find('.btn').addClass(this.settings.buttonClass)//ACE;//s.addClass('btn-default');
-        this.container.find('.moveall > i, .move > i').removeClass('icon-arrow-right').addClass('glyphicon glyphicon-arrow-right');
-        this.container.find('.removeall > i, .remove > i').removeClass('icon-arrow-left').addClass('glyphicon glyphicon-arrow-left');
+        this.container.find('.moveall > i, .move > i').removeClass('icon-arrow-right').addClass('fa fa-arrow-right');//ACE
+        this.container.find('.removeall > i, .remove > i').removeClass('icon-arrow-left').addClass('fa fa-arrow-left');//ACE
       }
       if (refresh) {
         refreshSelects(this);

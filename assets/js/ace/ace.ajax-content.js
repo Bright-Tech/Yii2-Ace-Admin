@@ -19,47 +19,74 @@
 		var $overlay = $();//empty set
 
 		this.force_reload = false;//set jQuery ajax's cache option to 'false' to reload content
-		this.loadUrl = function(hash, cache) {
+		this.loadUrl = function(hash, cache, manual_trigger) {
 			var url = false;
 			hash = hash.replace(/^(\#\!)?\#/, '');
 			
 			this.force_reload = (cache === false)
 			
 			if(typeof this.settings.content_url === 'function') url = this.settings.content_url(hash);
-			if(typeof url === 'string') this.getUrl(url, hash, false);
+			if(typeof url === 'string') this.getUrl(url, hash, manual_trigger);
 		}
 		
 		this.loadAddr = function(url, hash, cache) {
 			this.force_reload = (cache === false);
 			this.getUrl(url, hash, false);
 		}
+
+
+		this.reload = function() {
+			var hash = $.trim(window.location.hash);
+			if(!hash && this.settings.default_url) hash = this.settings.default_url;
+			
+			this.loadUrl(hash, false);
+		}
+		this.post = function(url, data, updateView, extraParams) {
+			var url = url || $.trim(location.href.replace(location.hash,''));
+			if(!url) return;
+			var data = data || {}
+			var updateView = updateView || false;
+			this.getUrl(url, null, false, 'POST', data, updateView, extraParams);
+		}
 		
-		this.getUrl = function(url, hash, manual_trigger) {
+		
+		this.getUrl = function(url, hash, manual_trigger, method, data, updateView, extraParams) {
 			if(working) {
 				return;
 			}
+			
+			var method = method || 'GET';
+			var updateView = (method == 'GET') || (method == 'POST' && updateView == true)
+			var data = data || null;
 		
 			var event
-			$contentArea.trigger(event = $.Event('ajaxloadstart'), {url: url, hash: hash})
+			$contentArea.trigger(event = $.Event('ajaxloadstart'), {url: url, hash: hash, method: method, data: data})
 			if (event.isDefaultPrevented()) return;
 			
 			self.startLoading();
+			
+			
+			var ajax_params = method == 'GET' ? {'url': url, 'cache': !this.force_reload} : {'url': url, 'method' : 'POST', 'data': data}
+			if(method == 'POST' && typeof extraParams == 'object') ajax_params = $.extend({}, ajax_params, extraParams);
 
-			$.ajax({
-				'url': url,
-				'cache': !this.force_reload
-			})
+			$.ajax(ajax_params)
 			.error(function() {
-				$contentArea.trigger('ajaxloaderror', {url: url, hash: hash});
+				$contentArea.trigger('ajaxloaderror', {url: url, hash: hash, method: method, data: data});
 				
 				self.stopLoading(true);
 			})
 			.done(function(result) {
-				$contentArea.trigger('ajaxloaddone', {url: url, hash: hash});
+				$contentArea.trigger('ajaxloaddone', {url: url, hash: hash, method: method, data: data});
+				if(method == 'POST') {
+					var event
+					$contentArea.trigger(event = $.Event('ajaxpostdone', {url: url, data: data, result: result}))
+					if( event.isDefaultPrevented() ) updateView = false;
+				}
 				
-				var link_element = null, link_text = '';;
+				
+				var link_element = null, link_text = '';
 				if(typeof self.settings.update_active === 'function') {
-					link_element = self.settings.update_active.call(null, hash, url);
+					link_element = self.settings.update_active.call(null, hash, url, method, updateView);
 				}
 				else if(self.settings.update_active === true && hash) {
 					link_element = $('a[data-url="'+hash+'"]');
@@ -80,7 +107,7 @@
 							nav.closest('.sidebar[data-sidebar-scroll=true]').each(function() {
 								var $this = $(this);
 								$this.ace_sidebar_scroll('reset');
-								if(manual_trigger) $this.ace_sidebar_scroll('scroll_to_active');//first time only
+								if(manual_trigger == true) $this.ace_sidebar_scroll('scroll_to_active');//first time only
 							})
 						}
 					}
@@ -88,26 +115,28 @@
 
 				/////////
 				if(typeof self.settings.update_breadcrumbs === 'function') {
-					link_text = self.settings.update_breadcrumbs.call(null, hash, url, link_element);
+					link_text = self.settings.update_breadcrumbs.call(null, hash, url, link_element, method, updateView);
 				}
 				else if(self.settings.update_breadcrumbs === true && link_element != null && link_element.length > 0) {
 					link_text = updateBreadcrumbs(link_element);
 				}
 				/////////
-
-				//convert "title" and "link" tags to "div" tags for later processing
-				result = String(result)
-					.replace(/<(title|link)([\s\>])/gi,'<div class="hidden ajax-append-$1"$2')
-					.replace(/<\/(title|link)\>/gi,'</div>')
-			
 				
 				$overlay.addClass('content-loaded').detach();
-				$contentArea.empty().html(result);
+				if(updateView) {
+					//convert "title" and "link" tags to "div" tags for later processing
+					result = String(result)
+						.replace(/<(title|link)([\s\>])/gi,'<div class="hidden ajax-append-$1"$2')
+						.replace(/<\/(title|link)\>/gi,'</div>')
+					$contentArea.empty().html(result);
+				}
 				
 				$(self.settings.loading_overlay || $contentArea).append($overlay);
-	
+
+
+
 				//remove previous stylesheets inserted via ajax
-				setTimeout(function() {
+				if(updateView) setTimeout(function() {
 					$('head').find('link.ace-ajax-stylesheet').remove();
 
 					var main_selectors = ['link.ace-main-stylesheet', 'link#main-ace-style', 'link[href*="/ace.min.css"]', 'link[href*="/ace.css"]']
@@ -132,22 +161,25 @@
 				//////////////////////
 
 				if(typeof self.settings.update_title === 'function') {
-					self.settings.update_title.call(null, hash, url, link_text);
+					self.settings.update_title.call(null, hash, url, link_text, method, updateView);
 				}
-				else if(self.settings.update_title === true) {
+				else if(self.settings.update_title === true && method == 'GET') {
 					updateTitle(link_text);
 				}
-				
 
-				if( !manual_trigger ) {
+				if( !manual_trigger && updateView ) {
 					$('html,body').animate({scrollTop: 0}, 250);
 				}
 
 				//////////////////////
-				$contentArea.trigger('ajaxloadcomplete', {url: url, hash: hash});
+				$contentArea.trigger('ajaxloadcomplete', {url: url, hash: hash, method: method, data:data});
 				//////////////////////
 				
-				self.stopLoading();
+				
+				//if result contains call to "loadScripts" then don't stopLoading now
+				var re = /\.(?:\s*)ace(?:_a|A)jax(?:\s*)\((?:\s*)(?:\'|\")loadScripts(?:\'|\")/;
+				if(result.match(re)) self.stopLoading();
+				else self.stopLoading(true);
 			})
 		}
 		
@@ -273,6 +305,7 @@
 		 
 		 
 		 this.loadScripts = function(scripts, callback) {
+			var scripts = scripts || [];
 			$.ajaxPrefilter('script', function(opts) {opts.cache = true});
 			setTimeout(function() {
 				//let's keep a list of loaded scripts so that we don't load them more than once!
@@ -353,7 +386,14 @@
 			var hash = $.trim(window.location.hash);
 			if(!hash || hash.length == 0) return;
 			
-			self.loadUrl(hash);
+			if(self.settings.close_mobile_menu) {
+				try {$(self.settings.close_mobile_menu).ace_sidebar('mobileHide')} catch(e){}
+			}
+			if(self.settings.close_dropdowns) {
+				$('.dropdown.open .dropdown-toggle').dropdown('toggle');
+			}
+			
+			self.loadUrl(hash, null, manual_trigger);
 		}).trigger('hashchange.ace_ajax', [true]);
 		
 		var hash = $.trim(window.location.hash);
@@ -363,7 +403,7 @@
 
 
 
-	$.fn.aceAjax = $.fn.ace_ajax = function (option, value, value2, value3) {
+	$.fn.aceAjax = $.fn.ace_ajax = function (option, value, value2, value3, value4) {
 		var method_call;
 
 		var $set = this.each(function () {
@@ -373,8 +413,9 @@
 
 			if (!data) $this.data('ace_ajax', (data = new AceAjax(this, options)));
 			if (typeof option === 'string' && typeof data[option] === 'function') {
-				if(value3 != undefined) method_call = data[option](value, value2, value3);
-				else if(value2 != undefined) method_call = data[option](value, value2);
+				if(value4 !== undefined) method_call = data[option](value, value2, value3, value4);
+				else if(value3 !== undefined) method_call = data[option](value, value2, value3);
+				else if(value2 !== undefined) method_call = data[option](value, value2);
 				else method_call = data[option](value);
 			}
 		});
@@ -394,7 +435,9 @@
 		update_title: true,
 		update_active: true,
 		close_active: false,
-		max_load_wait: false
+		max_load_wait: false,
+		close_mobile_menu: false,
+		close_dropdowns: false
      }
 
 })(window.jQuery);

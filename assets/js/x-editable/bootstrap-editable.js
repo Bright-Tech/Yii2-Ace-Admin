@@ -3844,8 +3844,9 @@ $(function(){
            }
        },
        
-       input2value: function() { 
-           return this.$input.select2('val');
+       input2value: function() {
+           //return this.$input.select2('val');
+		    return this.$input.val();//ACE
        },
 
        str2value: function(str, separator) {
@@ -3909,7 +3910,8 @@ $(function(){
         @property tpl 
         @default <input type="hidden">
         **/
-        tpl:'<input type="hidden">',
+        //tpl:'<input type="hidden">',
+		tpl:'<select></select>',//ACE
         /**
         Configuration of select2. [Full list of options](http://ivaynberg.github.com/select2).
 

@@ -181,7 +181,7 @@ input[type=checkbox].ace.ace-switch ~ .lbl {
 }
 
 
-[class*="input-"] {
+label , [class*="input-"] {
 	max-width: none !important;
 }
 
@@ -386,4 +386,21 @@ input[type=checkbox].ace.ace-switch ~ .lbl {
  .sidebar .submenu.sub-scroll {
   overflow-y: auto;
  }
+ 
+ 
+.tree .tree-branch > .tree-branch-header:hover {
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1A62A8D1', endColorstr='#1A62A8D1',GradientType=0 );
+}
+.tree .tree-selected > .tree-branch-header {
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2E62A8D1', endColorstr='#2E62A8D1',GradientType=0 );
+}
+
+
+.tree .tree-item:hover {
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1A62A8D1', endColorstr='#1A62A8D1',GradientType=0 );
+}
+.tree .tree-selected, .tree-selected:hover  {
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2862A8D1', endColorstr='#2862A8D1',GradientType=0 );
+}
+
 }

@@ -36,7 +36,7 @@ Image editable input.
         Renders input from tpl
 
         @method render() 
-        **/        
+        **/
         render: function() {
 			var self = this;
 			this.$input = this.$tpl.find('input[type=hidden]:eq(0)');
@@ -121,21 +121,7 @@ Image editable input.
         render: function () {
 			this.$editor = this.$input.nextAll('.wysiwyg-editor:eq(0)');
 			
-			this.$tpl.parent().find('.wysiwyg-editor').show().ace_wysiwyg(
-			 {
-				toolbar:
-				[
-				'bold',
-				'italic',
-				'strikethrough',
-				'underline',
-				null,
-				'foreColor',
-				null,
-				'insertImage'
-				]
-			  }
-			)
+			this.$tpl.parent().find('.wysiwyg-editor').show().ace_wysiwyg(this.options.wysiwyg)
 			.prev().addClass('wysiwyg-style2')
 			.closest('.editable-input').addClass('editable-wysiwyg')
 			.closest('.editable-container').css({'display':'block'});//if display is inline-block, putting large images inside the editor will expand it out of bounding box!
@@ -172,7 +158,17 @@ Image editable input.
 		tpl: '<input type="hidden" /><div class="wysiwyg-editor"></div>',
         inputclass: 'editable-wysiwyg',
         wysiwyg: {
-            
+            toolbar:
+			[
+			'bold',
+			'italic',
+			'strikethrough',
+			'underline',
+			null,
+			'foreColor',
+			null,
+			'insertImage'
+			]
         }
     });
 

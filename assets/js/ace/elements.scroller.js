@@ -21,6 +21,7 @@
 		var active = false;
 		var created = false;
 
+		
 		var $content_wrap = null, content_wrap = null;
 		var $track = null, $bar = null, track = null, bar = null;
 		var bar_style = null;
@@ -59,9 +60,13 @@
 		
 		var is_dirty = true;//to prevent consecutive 'reset' calls
 		
+		this.ref = function() {
+			return this;
+		}
+		
 		this.create = function(_settings) {
 			if(created) return;
-			//if(disabled) return;
+
 			if(_settings) settings = $.extend({}, $.fn.ace_scroll.defaults, _settings);
 
 			this.size = parseInt(this.$element.attr('data-size')) || settings.size || 200;
@@ -244,8 +249,6 @@
 			
 			//some mobile browsers don't have mouseenter
 			this.$element.on('mouseenter.ace_scroll touchstart.ace_scroll', function(e) {
-				//if(ace.vars['old_ie']) return;//IE8 has a problem triggering event two times and strangely wrong values for this.size especially in fullscreen widget!
-				
 				is_dirty = true;
 				if(observeContent) checkContentChanges(true);
 				else if(settings.hoverReset) self.reset(true);
@@ -400,13 +403,19 @@
 		}
 		this.update = function(_settings) {
 			if(_settings) settings = $.extend({}, settings, _settings);
-		
-			this.size = _settings.size || this.size;
+
+			this.size = settings.size || this.size;
 			
-			this.lock = _settings.mouseWheelLock || this.lock;
-			this.lock_anyway = _settings.lockAnyway || this.lock_anyway;
+			this.lock = settings.mouseWheelLock || this.lock;
+			this.lock_anyway = settings.lockAnyway || this.lock_anyway;
 			
-			if(_settings.styleClass != undefined) {
+			hideOnIdle = settings.hideOnIdle || hideOnIdle;
+			hideDelay = settings.hideDelay || hideDelay;
+			observeContent = settings.observeContent || false;
+			
+			dragEvent = settings.dragEvent || false;
+			
+			if(typeof _settings.styleClass !== 'undefined') {
 				if(styleClass) $track.removeClass(styleClass);
 				styleClass = _settings.styleClass;
 				if(styleClass) $track.addClass(styleClass);

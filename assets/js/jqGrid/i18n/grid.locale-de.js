@@ -1,4 +1,3 @@
-;(function($){
 /**
  * jqGrid German Translation
  * Version 1.0.0 (developed for jQuery Grid 3.3.1)
@@ -13,18 +12,55 @@
  * Oleg Kiriljuk oleg.kiriljuk@ok-soft-gmbh.com
  * the format corresponds now the format from
  * https://github.com/jquery/globalize/blob/master/lib/cultures/globalize.culture.de.js
+ * 
+ * Updated for jqGrid 4.8
+ * Tony Tomov
+ * http://www.guriddo.net
  *
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
+/*global jQuery, define */
+(function( factory ) {
+	"use strict";
+	if ( typeof define === "function" && define.amd ) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"../grid.base"
+		], factory );
+	} else {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
+
 $.jgrid = $.jgrid || {};
-$.extend($.jgrid,{
+if(!$.jgrid.hasOwnProperty("regional")) {
+	$.jgrid.regional = [];
+}
+$.jgrid.regional["de"] = {
 	defaults : {
 		recordtext: "Zeige {0} - {1} von {2}",
 		emptyrecords: "Keine Datensätze vorhanden",
 		loadtext: "Lädt...",
-		pgtext : "Seite {0} von {1}"
+		savetext: "Speichern...",
+		pgtext : "Seite {0} von {1}",
+		pgfirst : "erste Seite",
+		pglast : "letzte Seite",
+		pgnext : "nächste Seite",
+		pgprev : "vorherige Seite",
+		pgrecs : "Datensätze pro Seite",
+		showhide: "Toggle erweitern reduzieren",
+		// mobile
+		pagerCaption : "Grid::Page Settings",
+		pageText : "Page:",
+		recordPage : "Records per Page",
+		nomorerecs : "No more records...",
+		scrollPullup: "Pull up to load more...",
+		scrollPulldown : "Pull down to refresh...",
+		scrollRefresh : "Release to refresh..."
 	},
 	search : {
 		caption: "Suche...",
@@ -84,7 +120,12 @@ $.extend($.jgrid,{
 		alertcap: "Warnung",
 		alerttext: "Bitte Zeile auswählen",
 		viewtext: "",
-		viewtitle: "Ausgewählte Zeile anzeigen"
+		viewtitle: "Ausgewählte Zeile anzeigen",
+		savetext: "",
+		savetitle: "Zeile speihern",
+		canceltext: "",
+		canceltitle : "Zeile abbrechen",
+		selectcaption : "Actions..."
 	},
 	col : {
 		caption: "Spalten auswählen",
@@ -161,7 +202,8 @@ $.extend($.jgrid,{
 				//    Y - A full numeric representation of a year, 4 digits
 				YearMonth: "F Y" // in jQuery UI Datepicker: "MMMM yyyy"
 			},
-			reformatAfterEdit : false
+			reformatAfterEdit : false,
+			userLocalTime : false
 		},
 		baseLinkUrl: '',
 		showAction: '',
@@ -169,5 +211,5 @@ $.extend($.jgrid,{
 		checkbox : {disabled:true},
 		idName : 'id'
 	}
-});
-})(jQuery);
+};
+}));

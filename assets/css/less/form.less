@@ -182,6 +182,9 @@ input:-ms-input-placeholder, .form-control:-ms-input-placeholder { //IE 10+
 }
 
 
+
+
+
 .form-control , select {
   //line-height: 1;
   border-radius : 0;
@@ -481,7 +484,10 @@ input.input-lg {
   width: 1px;
 }
 
-
+.input-group-lg > .form-control, .input-group-lg > .input-group-addon, .input-group-lg > .input-group-btn > .btn {
+ padding-top: 6px;
+ padding-bottom: 6px;
+}
 
 
 
@@ -629,6 +635,20 @@ input.input-lg {
 	background-color: @disabled-state-bg !important;
  }
 }
+
+
+
+input[type].input-transparent, textarea.input-transparent, .input-transparent {
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #bbb;
+	border-color: transparent !important;
+	
+	&:focus {
+		background-color: rgba(0, 0, 0, 0.66);
+		color: #f0f0f0;
+	}
+}
+
 
 
 

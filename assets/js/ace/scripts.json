@@ -8,6 +8,7 @@
  "elements.treeview.js" : true,
  "elements.wizard.js" : true,
  "elements.aside.js" : true,
+ "elements.onpage-help.js" : false,
 
  "ace.js" : true,
  "ace.ajax-content.js" : true,

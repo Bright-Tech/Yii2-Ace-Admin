@@ -6,6 +6,7 @@
 .center , .align-center{ text-align: center !important; }
 .align-left { text-align: left !important; }
 .align-right { text-align: right !important; }
+.align-justify { text-align: justify; }
 
 .middle { vertical-align: middle; }
 .align-middle { vertical-align: middle !important; }
@@ -198,6 +199,11 @@
  margin-top: 18px;
  padding-bottom: 4px;
  border-bottom: 1px solid #CCC;
+ 
+ &.less-margin {
+	margin-top: 10px;
+	margin-bottom: 10px;
+ }
  
  &.blue {
 	border-bottom-color: desaturate(lighten(@ace-blue, 35%), 10%);
