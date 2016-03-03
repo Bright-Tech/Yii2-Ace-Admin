@@ -27,7 +27,7 @@ class AceAdminJqgridAsset extends AssetBundle
 
     public $js = [
         'js/jqGrid/jquery.jqGrid.js',
-        'js/jqGrid/i18n/grid.locale-en.js'
+        'js/jqGrid/i18n/grid.locale-cn.js'
     ];
 
     public $depends = [
