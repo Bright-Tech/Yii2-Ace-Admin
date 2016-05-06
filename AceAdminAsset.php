@@ -27,6 +27,7 @@ class AceAdminAsset extends AssetBundle
     ];
     
     public $js = [
+        'js/jquery.nestable.js',
         'js/fuelux/fuelux.tree.js',
         'js/fuelux/fuelux.spinner.js',
         'js/ace/elements.scroller.js',
