@@ -4,7 +4,7 @@
  */
 ;(function($, window, document, undefined)
 {
-    var hasTouch = 'ontouchstart' in document.documentElement;
+    var hasTouch = 'ontouchstart' in document;
 
     /**
      * Detect CSS pointer-events property
@@ -25,10 +25,6 @@
         docEl.removeChild(el);
         return !!supports;
     })();
-
-    var eStart  = 'mousedown touchstart MSPointerDown pointerdown',//ACE
-        eMove   = 'mousemove touchmove MSPointerMove pointermove',//ACE
-        eEnd    = 'mouseup touchend touchcancel MSPointerUp MSPointerCancel pointerup pointercancel';//ACE
 
     var defaults = {
             listNodeName    : 'ol',
@@ -51,7 +47,7 @@
 
     function Plugin(element, options)
     {
-        this.w  = $(window);
+        this.w  = $(document);
         this.el = $(element);
         this.options = $.extend({}, defaults, options);
         this.init();
@@ -74,7 +70,7 @@
             });
 
             list.el.on('click', 'button', function(e) {
-                if (list.dragEl || ('button' in e && e.button !== 0)) {
+                if (list.dragEl) {
                     return;
                 }
                 var target = $(e.currentTarget),
@@ -90,7 +86,6 @@
 
             var onStartEvent = function(e)
             {
-				e = e.originalEvent;//ACE
                 var handle = $(e.target);
                 if (!handle.hasClass(list.options.handleClass)) {
                     if (handle.closest('.' + list.options.noDragClass).length) {
@@ -98,44 +93,46 @@
                     }
                     handle = handle.closest('.' + list.options.handleClass);
                 }
-				//ACE
-                if (!handle.length || list.dragEl || ('button' in e && e.button !== 0) || ('touches' in e && e.touches.length !== 1)) {
+
+                if (!handle.length || list.dragEl) {
                     return;
                 }
+
+                list.isTouch = /^touch/.test(e.type);
+                if (list.isTouch && e.touches.length !== 1) {
+                    return;
+                }
+
                 e.preventDefault();
-                list.dragStart('touches' in e ? e.touches[0] : e);//ACE
+                list.dragStart(e.touches ? e.touches[0] : e);
             };
 
             var onMoveEvent = function(e)
             {
                 if (list.dragEl) {
-					e = e.originalEvent;//ACE
                     e.preventDefault();
-                    list.dragMove('touches' in e ? e.touches[0] : e);//ACE
+                    list.dragMove(e.touches ? e.touches[0] : e);
                 }
             };
 
             var onEndEvent = function(e)
             {
-				if (list.dragEl) {
-					e = e.originalEvent;//ACE
+                if (list.dragEl) {
                     e.preventDefault();
-                    list.dragStop('touches' in e ? e.touches[0] : e);//ACE
+                    list.dragStop(e.touches ? e.touches[0] : e);
                 }
             };
 
-			//ACE
-            /**if (hasTouch) {
-                list.el[0].addEventListener(eStart, onStartEvent, false);
-                window.addEventListener(eMove, onMoveEvent, false);
-                window.addEventListener(eEnd, onEndEvent, false);
-                //window.addEventListener(eCancel, onEndEvent, false);
-            } else {
-			*/
-                list.el.on(eStart, onStartEvent);
-                list.w.on(eMove, onMoveEvent);
-                list.w.on(eEnd, onEndEvent);
-            //}
+            if (hasTouch) {
+                list.el[0].addEventListener('touchstart', onStartEvent, false);
+                window.addEventListener('touchmove', onMoveEvent, false);
+                window.addEventListener('touchend', onEndEvent, false);
+                window.addEventListener('touchcancel', onEndEvent, false);
+            }
+
+            list.el.on('mousedown', onStartEvent);
+            list.w.on('mousemove', onMoveEvent);
+            list.w.on('mouseup', onEndEvent);
 
         },
 
@@ -190,6 +187,7 @@
                 distAxX   : 0,
                 distAxY   : 0
             };
+            this.isTouch    = false;
             this.moving     = false;
             this.dragEl     = null;
             this.dragRootEl = null;
@@ -267,8 +265,6 @@
             this.dragEl = $(document.createElement(this.options.listNodeName)).addClass(this.options.listClass + ' ' + this.options.dragClass);
             this.dragEl.css('width', dragItem.width());
 
-            // fix for zepto.js
-            //dragItem.after(this.placeEl).detach().appendTo(this.dragEl);
             dragItem.after(this.placeEl);
             dragItem[0].parentNode.removeChild(dragItem[0]);
             dragItem.appendTo(this.dragEl);
@@ -291,8 +287,6 @@
 
         dragStop: function(e)
         {
-            // fix for zepto.js
-            //this.placeEl.replaceWith(this.dragEl.children(this.options.itemNodeName + ':first').detach());
             var el = this.dragEl.children(this.options.itemNodeName).first();
             el[0].parentNode.removeChild(el[0]);
             this.placeEl.replaceWith(el);
