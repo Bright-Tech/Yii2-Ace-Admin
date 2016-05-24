@@ -45,6 +45,6 @@ class AceAdminAsset extends AssetBundle
 
     public $depends = [
         'yii\web\YiiAsset',
-        'bright\theme\yii2\aceadmin\BootstrapAsset'
+        'yii\bootstrap\BootstrapAsset'
     ];
 }
