@@ -16,7 +16,7 @@ use yii\web\AssetBundle;
 class AceAdminWysiwygAsset extends AssetBundle
 {
 
-    public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/assets';
+    public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/src/assets';
     
     public $jsOptions = [
         'position' => \yii\web\View::POS_HEAD

@@ -11,16 +11,23 @@ use yii\web\AssetBundle;
 /**
  *
  * @author
+ *
  * @since
+ *
  */
-class AceAdminWizardAsset extends AssetBundle
+class AceAdminJqgridAsset extends AssetBundle
 {
 
-    public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/assets';
-    
+    public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/src/assets';
+
+    public $css = [
+        'css/ui.jqgrid.css',
+        'css/ace.jqgrid.css'
+    ];
+
     public $js = [
-        'js/fuelux/fuelux.wizard.js',
-        'js/ace/elements.wizard.js',
+        'js/jqGrid/jquery.jqGrid.js',
+        'js/jqGrid/i18n/grid.locale-cn.js'
     ];
 
     public $depends = [

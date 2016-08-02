@@ -14,7 +14,7 @@ use yii\web\AssetBundle;
 class AceAdminAsset extends AssetBundle
 {
 
-    public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/assets';
+    public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/src/assets';
     
     public $jsOptions = [
         'position' => \yii\web\View::POS_HEAD
@@ -24,6 +24,10 @@ class AceAdminAsset extends AssetBundle
         'css/font-awesome.css',
         'css/ace-fonts.css',
         'css/ace.css',
+        'css/bootstrap-datepicker3.css',
+        'css/bootstrap-timepicker.css',
+        'css/daterangepicker.css',
+        'css/bootstrap-datetimepicker.css'
     ];
     
     public $js = [
@@ -40,7 +44,11 @@ class AceAdminAsset extends AssetBundle
         'js/ace/ace.js',
         'js/ace/ace.sidebar.js',
         'js/ace/ace.sidebar-scroll-1.js',
-        'js/json2.js',
+        'js/date-time/bootstrap-datepicker.js',
+        'js/date-time/bootstrap-timepicker.js',
+        'js/date-time/moment.js',
+        'js/date-time/daterangepicker.js',
+        'js/date-time/bootstrap-datetimepicker.js'
     ];
 
     public $depends = [

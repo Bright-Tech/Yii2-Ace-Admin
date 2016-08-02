@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "bright\\theme\\yii2\\aceadmin\\": ""
+            "bright\\theme\\yii2\\aceadmin\\": "src/"
         }
     }
 }
