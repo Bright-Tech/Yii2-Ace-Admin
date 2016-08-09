@@ -1,11 +1,5 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
-
-namespace bright\theme\yii2\aceadmin;
+namespace bright_tech\yii2theme\aceadmin\widgets;
 
 use Yii;
 use yii\base\InvalidConfigException;
@@ -13,6 +7,8 @@ use yii\base\InvalidConfigException;
 
 class ActiveForm extends \yii\bootstrap\ActiveForm
 {
+    public $fieldClass = 'bright_tech\yii2theme\aceadmin\widgets\ActiveField';
+    
     /**
      * @inheritdoc
      * @return \bright\theme\yii2\aceadmin\ActiveField

@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-namespace bright\theme\yii2\aceadmin;
+namespace bright_tech\yii2theme\aceadmin;
 
 use yii\web\AssetBundle;
 

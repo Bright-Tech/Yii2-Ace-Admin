@@ -2,7 +2,7 @@
 /**
  * @author Sam Xiao
  */
-namespace bright\theme\yii2\aceadmin;
+namespace bright_tech\yii2theme\aceadmin;
 
 use yii\web\AssetBundle;
 

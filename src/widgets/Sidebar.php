@@ -1,5 +1,5 @@
 <?php
-namespace bright\theme\yii2\aceadmin\widgets;
+namespace bright_tech\yii2theme\aceadmin\widgets;
 
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
