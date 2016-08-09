@@ -23,6 +23,7 @@ class ActiveField extends \yii\bootstrap\ActiveField
         $this->adjustLabelFor($options);
         $this->parts['{input}'] = Html::activeTextInput($this->model, $this->attribute, $options);
         $this->parts['{input}'] .= Html::tag('span', Html::tag('i', '', ['class'=>'fa fa-calendar bigger-110']) , ['class' => "input-group-addon"]);
+        $this->parts['{input}'] = Html::tag('div', $this->parts['{input}'], ['class'=>'input-group']);
         return $this;
     }
 }

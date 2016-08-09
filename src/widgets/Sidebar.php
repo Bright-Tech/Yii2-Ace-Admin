@@ -3,7 +3,7 @@ namespace bright_tech\yii2theme\aceadmin\widgets;
 
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
-use bright\theme\yii2\aceadmin\AceAdminAsset;
+use bright_tech\yii2theme\aceadmin\AceAdminAsset;
 use yii\helpers\ArrayHelper;
 
 
