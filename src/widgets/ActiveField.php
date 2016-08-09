@@ -18,8 +18,8 @@ class ActiveField extends \yii\bootstrap\ActiveField
      */
     public function datePicker($type, $options = [])
     {
-        $inputOptins = array_merge($this->inputOptions, [ 'class'=>'form-control date-picker', 'data'=>['date-format'=>'dd-mm-yyyy']]);
-        $options = array_merge($this->inputOptions, $options);
+        $inputOptins = array_merge($this->inputOptions, [  'class'=>['form-control', 'date-picker'], 'data'=>['date-format'=>'dd-mm-yyyy']]);
+        $options = array_merge($inputOptins, $options);
         $this->adjustLabelFor($options);
         $this->parts['{input}'] = Html::activeTextInput($this->model, $this->attribute, $options);
         $this->parts['{input}'] .= Html::tag('span', Html::tag('i', '', ['class'=>'fa fa-calendar bigger-110']) , ['class' => "input-group-addon"]);
