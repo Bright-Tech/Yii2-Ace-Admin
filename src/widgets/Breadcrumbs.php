@@ -1,8 +1,9 @@
 <?php
 namespace bright_tech\yii2theme\aceadmin\widgets;
 
-
+use Yii;
 use yii\helpers\Html;
+
 /**
  * <div class="breadcrumbs" id="breadcrumbs">
  * <ul class="breadcrumb">
@@ -18,6 +19,7 @@ use yii\helpers\Html;
  * </ul><!-- /.breadcrumb -->
  * </div>
  */
+
 /**
  *
  * @author SamXiao
@@ -26,17 +28,23 @@ use yii\helpers\Html;
 class Breadcrumbs extends \yii\widgets\Breadcrumbs
 {
     public $homeTemplate = "<li><i class=\"ace-icon fa fa-home home-icon\"></i>{link}</li>\n";
-    
-    public function run(){
+
+    public $warpOptions = ['class' => 'breadcrumbs'];
+
+    public $warpTag = 'div';
+
+    public function run()
+    {
+
         if (empty($this->links)) {
             return;
         }
         $links = [];
         if ($this->homeLink === null) {
             $links[] = $this->renderItem([
-                'label' => \Yii::t('yii', 'Home'),
-                'url' => \Yii::$app->homeUrl,
-            ], $this->homeTemplate);
+                'label' => Yii::t('yii', 'Home'),
+                'url' => Yii::$app->homeUrl,
+            ], $this->itemTemplate);
         } elseif ($this->homeLink !== false) {
             $links[] = $this->renderItem($this->homeLink, $this->homeTemplate);
         }
@@ -46,11 +54,12 @@ class Breadcrumbs extends \yii\widgets\Breadcrumbs
             }
             $links[] = $this->renderItem($link, isset($link['url']) ? $this->itemTemplate : $this->activeItemTemplate);
         }
+
         $ulHtml = Html::tag($this->tag, implode('', $links), $this->options);
-        
-        return Html::tag('div', $ulHtml, ['class'=>'breadcrumbs']);
+        return Html::tag($this->warpTag, $ulHtml, $this->warpOptions);
+
     }
-    
+
 
 }
 

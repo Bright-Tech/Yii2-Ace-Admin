@@ -4,3 +4,6 @@
 .DS_Store
 vendor
 composer.lock
+
+# phpstorm project files
+.idea
