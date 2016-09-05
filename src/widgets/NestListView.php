@@ -3,6 +3,7 @@ namespace bright_tech\yii2theme\aceadmin\widgets;
 
 use bright_tech\yii2theme\aceadmin\NestableAsset;
 use yii\db\ActiveRecordInterface;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\base\InvalidConfigException;
 use yii\base\Widget;
@@ -28,6 +29,12 @@ class NestListView extends Widget
      */
     public $modelOptions = ['contentAttribute' => 'name'];
 
+
+    /**
+     * plugin options
+     *
+     * @var string
+     */
     public $listNodeName = 'ol';
     public $itemNodeName = 'li';
     public $rootClass = 'dd';
@@ -45,6 +52,15 @@ class NestListView extends Widget
     public $maxDepth = 5;
     public $threshold = 20;
 
+    /**
+     * @var array
+     */
+    public $buttons = [];
+
+    /**
+     *
+     */
+    public $showActionButtonContent = false;
 
     /**
      * Initializes the widget.
@@ -85,8 +101,21 @@ class NestListView extends Widget
 
     public function renderItem($model, $key, $index)
     {
+        $content = $model['content'];
+        if (!empty($this->buttons)) {
+            $buttons = [];
+            foreach ($this->buttons as $button) {
+                $url = str_replace('{id}', $model['id'], urldecode($button['url']));
+                $text = $this->showActionButtonContent ? $button['text'] : '';
+                if (isset($button['iconClass'])) {
+                    $text .= Html::tag('i', '', ['class' => $button['iconClass']]);
+                }
+                $buttons[] = Html::a($text, $url, ['class' => ArrayHelper::getValue($button, 'linkClass', '')]);
+            }
+            $content .= Html::tag('div', implode('', $buttons), ['class' => 'pull-right action-buttons']);
+        }
 
-        $itemHtml = Html::tag('div', $model['content'], ['class' => 'dd-handle']);
+        $itemHtml = Html::tag('div', $content, ['class' => 'dd-handle']);
 
         return Html::tag('li', $itemHtml, ['class' => 'dd-item', 'data' => ['id' => $key]]);
 
