@@ -20,9 +20,12 @@ class NestListView extends Widget
     /**
      * @var \yii\data\DataProviderInterface the data provider for the view. This property is required.
      */
-    public $dataProvider;
+    public $dataProvider = null;
 
-    public $items;
+    /**
+     * @var
+     */
+    public $items = null;
 
     /**
      * @var array
@@ -67,10 +70,12 @@ class NestListView extends Widget
      */
     public function init()
     {
-        if ($this->dataProvider === null) {
-            throw new InvalidConfigException('The "dataProvider" property must be set.');
+        if ($this->dataProvider !== null) {
+            $this->prepareItems();
         }
-        $this->prepareItems();
+        if ($this->items === null) {
+            throw new InvalidConfigException('The "dataProvider" property or "items" property must be set at least one.');
+        }
 
     }
 
@@ -81,31 +86,30 @@ class NestListView extends Widget
         $view->registerJs($this->renderJS());
         $html = '';
         if (count($this->items) > 0) {
-            $html = $this->renderItems();
-            $html = Html::tag('ol', $html, ['class' => 'dd-list']);
+            $html = $this->renderItems($this->items);
         }
         return Html::tag('div', $html, ['class' => 'dd', 'id' => 'nestable']);
     }
 
-    public function renderItems()
+    public function renderItems($items)
     {
         $itemsHtml = '';
 
-        $items = array_values($this->items);
-        $keys = array_keys($this->items);
-        foreach ($items as $index => $item) {
-            $itemsHtml .= $this->renderItem($item, $keys[$index], $index);
+        $itemsValues = array_values($items);
+        $itemsKeys = array_keys($items);
+        foreach ($itemsValues as $index => $item) {
+            $itemsHtml .= $this->renderItem($item, $itemsKeys[$index], $index);
         }
-        return $itemsHtml;
+        return Html::tag('ol', $itemsHtml, ['class' => 'dd-list']);
     }
 
     public function renderItem($model, $key, $index)
     {
-        $content = $model['content'];
+        $content = ArrayHelper::getValue($model, 'content');
         if (!empty($this->buttons)) {
             $buttons = [];
             foreach ($this->buttons as $button) {
-                $url = str_replace('{id}', $model['id'], urldecode($button['url']));
+                $url = str_replace('{id}', ArrayHelper::getValue($model, 'id'), urldecode($button['url']));
                 $text = $this->showActionButtonContent ? $button['text'] : '';
                 if (isset($button['iconClass'])) {
                     $text .= Html::tag('i', '', ['class' => $button['iconClass']]);
@@ -117,25 +121,37 @@ class NestListView extends Widget
 
         $itemHtml = Html::tag('div', $content, ['class' => 'dd-handle']);
 
-        return Html::tag('li', $itemHtml, ['class' => 'dd-item', 'data' => ['id' => $key]]);
+        $itemData = ArrayHelper::getValue($model, 'data', []);
+        $itemData['id'] = $key;
+
+        if (ArrayHelper::keyExists('items', $model)) {
+            $itemHtml .= $this->renderItems(ArrayHelper::getValue($model, 'items'));
+        }
+        return Html::tag('li', $itemHtml, ['class' => 'dd-item', 'data' => $itemData]);
 
     }
 
     public function prepareItems()
     {
         $items = [];
-        $models = $this->dataProvider->getModels();
-        /**
-         * @var ActiveRecordInterface $model
-         */
-        foreach ($models as $model) {
 
-            $items[] = [
-                'id' => $model->getPrimaryKey(),
-                'content' => $model->getAttribute($this->modelOptions['contentAttribute'])
-            ];
+        if ($this->dataProvider instanceof \yii\data\DataProviderInterface) {
+            $models = $this->dataProvider->getModels();
+            /**
+             * @var ActiveRecordInterface $model
+             */
+            foreach ($models as $model) {
+
+                $items[] = [
+                    'id' => $model->getPrimaryKey(),
+                    'content' => $model->getAttribute($this->modelOptions['contentAttribute'])
+                ];
+            }
+            $this->items = $items;
+        } else {
+            throw new InvalidConfigException('The "dataProvider" property must be a instance of \yii\data\DataProviderInterface.');
         }
-        $this->items = $items;
+
     }
 
     public function renderJS()
