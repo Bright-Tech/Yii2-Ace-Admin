@@ -49,11 +49,6 @@ class Sidebar extends Nav
     public $activateParents = true;
 
     public $defaultDropDownBTagOptions = ['class' => 'arrow fa fa-angle-down'];
-    // public $currentItem;
-
-    // public $menuItems;
-
-    // public $shortcutItems;
 
     /**
      * Initializes the widget.
@@ -84,7 +79,7 @@ class Sidebar extends Nav
                 continue;
             }
             if (ArrayHelper::keyExists('items', $item)) {
-                $items[] = $this->renderDropdownItem($item);
+                $items[] = $this->renderDropDownItem($item);
             } else {
                 $items[] = $this->renderItem($item);
             }
@@ -95,7 +90,7 @@ class Sidebar extends Nav
     }
 
     /**
-     * Renders a widget's item.
+     * 生成叶节点(无子菜单的项)
      *
      * @param string|array $item
      *            the item to render.
@@ -123,7 +118,16 @@ class Sidebar extends Nav
 
     }
 
-    public function renderDropdownItem($item, &$active = false)
+    /**
+     * 生成下拉节点(有子菜单的项)
+     *
+     * @param string|array $item
+     *            the item to render.
+     * @param bool $active
+     * @return string the rendering result.
+     * @throws InvalidConfigException
+     */
+    public function renderDropDownItem($item, &$active = false)
     {
         if (is_string($item)) {
             return $item;
@@ -152,8 +156,10 @@ class Sidebar extends Nav
     }
 
     /**
+     * 生成节点链接
      *
-     * @param unknown $item
+     * @param string|array $item
+     * @return string the rendering result.
      */
     protected function renderItemLink($item)
     {
@@ -175,8 +181,10 @@ class Sidebar extends Nav
     }
 
     /**
+     * 生成节点图标
      *
-     * @param unknown $item 一级节点
+     * @param string|array $item
+     * @return string the rendering result.
      */
     protected function renderItemIcon($item)
     {
@@ -191,9 +199,11 @@ class Sidebar extends Nav
     }
 
     /**
+     * 生成子菜单项目
      *
-     * @param unknown $items 节点数组
-     * @param unknown $item 上级节点
+     * @param array $items
+     * @param bool $active
+     * @return string the rendering result.
      */
     protected function renderSubItems($items, &$active)
     {
@@ -207,7 +217,9 @@ class Sidebar extends Nav
 
 
             if (ArrayHelper::keyExists('items', $item)) {
-                $subItems[] = $this->renderDropdownItem($item,$active);
+                $subActive = false;
+                $subItems[] = $this->renderDropDownItem($item,$subActive);
+                $active = $active || $subActive;
             } else {
                 $subItems[] = $this->renderItem($item);
             }
