@@ -7,6 +7,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\base\InvalidConfigException;
 use yii\base\Widget;
+use yii\helpers\Url;
+use yii\web\View;
 
 class NestListView extends Widget
 {
@@ -31,6 +33,9 @@ class NestListView extends Widget
      * @var array
      */
     public $modelOptions = ['contentAttribute' => 'name'];
+
+
+    public $buttonSeparator = '';
 
 
     /**
@@ -79,11 +84,14 @@ class NestListView extends Widget
 
     }
 
+    /**
+     * @return string
+     */
     public function run()
     {
         $view = $this->getView();
         NestableAsset::register($view);
-        $view->registerJs($this->renderJS());
+        $this->renderJS($view);
         $html = '';
         if (count($this->items) > 0) {
             $html = $this->renderItems($this->items);
@@ -91,6 +99,10 @@ class NestListView extends Widget
         return Html::tag('div', $html, ['class' => 'dd', 'id' => 'nestable']);
     }
 
+    /**
+     * @param $items
+     * @return string
+     */
     public function renderItems($items)
     {
         $itemsHtml = '';
@@ -103,23 +115,18 @@ class NestListView extends Widget
         return Html::tag('ol', $itemsHtml, ['class' => 'dd-list']);
     }
 
+    /**
+     * @param $model
+     * @param $key
+     * @param $index
+     * @return string
+     */
     public function renderItem($model, $key, $index)
     {
         $content = ArrayHelper::getValue($model, 'content');
-        if (!empty($this->buttons)) {
-            $buttons = [];
-            foreach ($this->buttons as $button) {
-                $url = str_replace('{id}', ArrayHelper::getValue($model, 'id'), urldecode($button['url']));
-                $text = $this->showActionButtonContent ? $button['text'] : '';
-                if (isset($button['iconClass'])) {
-                    $text .= Html::tag('i', '', ['class' => $button['iconClass']]);
-                }
-                $buttons[] = Html::a($text, $url, ['class' => ArrayHelper::getValue($button, 'linkClass', '')]);
-            }
-            $content .= Html::tag('div', implode('', $buttons), ['class' => 'pull-right action-buttons']);
-        }
+        $buttons = $this->renderButtons($model);
 
-        $itemHtml = Html::tag('div', $content, ['class' => 'dd-handle']);
+        $itemHtml = Html::tag('div', $content . $buttons, ['class' => 'dd-handle']);
 
         $itemData = ArrayHelper::getValue($model, 'data', []);
         $itemData['id'] = $key;
@@ -131,6 +138,38 @@ class NestListView extends Widget
 
     }
 
+    public function renderButtons($model)
+    {
+        if (!empty($this->buttons)) {
+            $buttons = [];
+            $modelButtons = ArrayHelper::getValue($model, 'buttons', []);
+            foreach ($modelButtons as $button) {
+
+                if (ArrayHelper::keyExists($button, $this->buttons)) {
+                    $buttonTemplate = ArrayHelper::getValue($this->buttons, $button);
+                    $url = ArrayHelper::getValue($buttonTemplate, 'url');
+                    $url['id'] = $model['id'];
+                    $url = Url::to($url);
+                    $text = $this->showActionButtonContent ? $buttonTemplate['text'] : '';
+                    if (isset($buttonTemplate['iconClass'])) {
+                        $text .= Html::tag('i', '', ['class' => $buttonTemplate['iconClass']]);
+                    }
+                    $buttons[] = Html::a($text, $url, ['class' => ArrayHelper::getValue($buttonTemplate, 'linkClass', '')]);
+                } else {
+                    throw new InvalidConfigException("Button does not in the Buttons");
+                }
+
+            }
+
+            return Html::tag('div', implode($this->buttonSeparator, $buttons), ['class' => 'pull-right action-buttons']);
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
     public function prepareItems()
     {
         $items = [];
@@ -144,7 +183,8 @@ class NestListView extends Widget
 
                 $items[] = [
                     'id' => $model->getPrimaryKey(),
-                    'content' => $model->getAttribute($this->modelOptions['contentAttribute'])
+                    'content' => $model->getAttribute($this->modelOptions['contentAttribute']),
+                    'buttons' => array_keys($this->buttons)
                 ];
             }
             $this->items = $items;
@@ -154,9 +194,13 @@ class NestListView extends Widget
 
     }
 
-    public function renderJS()
+
+    /**
+     * @param View $view
+     */
+    public function renderJS(View $view)
     {
-        return "jQuery('.dd').nestable({
+        $jsString = "jQuery('.dd').nestable({
             listNodeName    : '{$this->listNodeName}',
             itemNodeName    : '{$this->itemNodeName}',
             rootClass       : '{$this->rootClass}',
@@ -174,5 +218,6 @@ class NestListView extends Widget
             maxDepth        : '{$this->maxDepth}',
             threshold       : '{$this->threshold}'
         });";
+        return $view->registerJs($jsString);
     }
 }
