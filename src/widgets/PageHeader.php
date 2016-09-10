@@ -1,35 +1,53 @@
 <?php
 namespace bright_tech\yii2theme\aceadmin\widgets;
 
-use yii\base\Widget;
+use yii\bootstrap\Widget;
 use yii\helpers\Html;
 
+/**
+ * Class PageHeader
+ *
+ * 使用方式
+ * <?= PageHeader::widget(['title'=>'标题', 'subTitle'=>'副标题'])?>
+ * 或者
+ * <?php PageHeader::begin(['title'=>'标题', 'subTitle'=>'副标题'])?>
+ * 其他需要在标题中显示的内容
+ * <?php PageHeader::end()?>
+ *
+ * @package bright_tech\yii2theme\aceadmin\widgets
+ */
 class PageHeader extends Widget
 {
 
-    const PAGE_HEADER_DEFAULT = 'header';
-
-    const PAGE_HEADER_SUB = 'subheader';
     public $title = 'Default Title';
+
     public $subTitle = '';
-    public $headerTemplate = '<div class="page-header"><h1><{title}><{subTitle}></h1></div>';
-    public $subTitleTemplate = '<small><i class="ace-icon fa fa-angle-double-right"></i><{subTitle}></small>';
-    public $type = 'header';
+
+    public $options = [];
 
     public function init()
     {
         parent::init();
+        $this->initOptions();
+
+        echo Html::beginTag('div', $this->options) . "\n";
+        echo Html::beginTag('h1') . "\n";
+        echo $this->title;
+        if (!empty($this->subTitle)) {
+            echo  Html::tag('small', '<i class="ace-icon fa fa-angle-double-right"></i>' . $this->subTitle) . "\n";
+        }
+
     }
 
     public function run()
     {
-        $subTitle = '';
-        if (!empty($this->subTitle)){
-            $subTitle = str_replace( '<{subTitle}>', Html::encode( $this->subTitle ), $this->subTitleTemplate );
-        }
-        $html = str_replace( '<{title}>', Html::encode( $this->title ), $this->headerTemplate );
-        $html = str_replace( '<{subTitle}>', $subTitle, $html );
-        return $html;
+        echo "\n" . Html::endTag('h1');
+        echo "\n" . Html::endTag('div');
+    }
+
+    protected function initOptions()
+    {
+        Html::addCssClass($this->options, 'page-header');
     }
 }
 
