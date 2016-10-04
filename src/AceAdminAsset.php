@@ -31,7 +31,6 @@ class AceAdminAsset extends AssetBundle
     ];
     
     public $js = [
-        'js/jquery.nestable.js',
         'js/fuelux/fuelux.tree.js',
         'js/fuelux/fuelux.spinner.js',
         'js/ace/elements.scroller.js',
@@ -44,6 +43,7 @@ class AceAdminAsset extends AssetBundle
         'js/ace/ace.js',
         'js/ace/ace.sidebar.js',
         'js/ace/ace.sidebar-scroll-1.js',
+        'js/ace/ace.widget-box.js',
         'js/date-time/bootstrap-datepicker.js',
         'js/date-time/bootstrap-timepicker.js',
         'js/date-time/moment.js',

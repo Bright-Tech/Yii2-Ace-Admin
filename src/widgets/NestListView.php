@@ -37,6 +37,8 @@ class NestListView extends Widget
 
     public $buttonSeparator = '';
 
+    public $collapseAll = false;
+
 
     /**
      * plugin options
@@ -200,7 +202,8 @@ class NestListView extends Widget
      */
     public function renderJS(View $view)
     {
-        $jsString = "jQuery('.dd').nestable({
+        $jsString = "
+        BrightNestableList.NestableListOptions = {
             listNodeName    : '{$this->listNodeName}',
             itemNodeName    : '{$this->itemNodeName}',
             rootClass       : '{$this->rootClass}',
@@ -217,7 +220,12 @@ class NestListView extends Widget
             group           : '{$this->group}',
             maxDepth        : '{$this->maxDepth}',
             threshold       : '{$this->threshold}'
-        });";
+        };
+        BrightNestableList.initNestableList();
+        ";
+        if ($this->collapseAll){
+            $jsString .= "$('.dd').nestable('collapseAll')";
+        }
         return $view->registerJs($jsString);
     }
 }
