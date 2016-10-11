@@ -5,6 +5,6 @@ var BrightNestableList = {
     NestableListOptions: [],
     initNestableList: function () {
         var me = this;
-        jQuery('.dd').nestable(me.nestlistOptions);
+        jQuery('.dd').nestable(me.NestableListOptions);
     }
 };

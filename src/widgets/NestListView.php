@@ -39,6 +39,8 @@ class NestListView extends Widget
 
     public $collapseAll = false;
 
+    public $dragable = true;
+
 
     /**
      * plugin options
@@ -210,7 +212,7 @@ class NestListView extends Widget
             listClass       : '{$this->listClass}',
             itemClass       : '{$this->itemClass}',
             dragClass       : '{$this->dragClass}',
-            handleClass     : '{$this->handleClass}',
+            handleClass     : '" . ($this->dragable ? 'dd-handle' : 'dd-nodrag-handle') . "',
             collapsedClass  : '{$this->collapsedClass}',
             placeClass      : '{$this->placeClass}',
             noDragClass     : '{$this->noDragClass}',
@@ -223,7 +225,7 @@ class NestListView extends Widget
         };
         BrightNestableList.initNestableList();
         ";
-        if ($this->collapseAll){
+        if ($this->collapseAll) {
             $jsString .= "$('.dd').nestable('collapseAll')";
         }
         return $view->registerJs($jsString);
