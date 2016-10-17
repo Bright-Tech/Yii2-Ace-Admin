@@ -45,6 +45,7 @@ class AceAdminAsset extends AssetBundle
         'js/ace/ace.sidebar-scroll-1.js',
         'js/ace/ace.widget-box.js',
         'js/date-time/bootstrap-datepicker.js',
+        'js/date-time/bootstrap-datepicker.zh-CN.js',
         'js/date-time/bootstrap-timepicker.js',
         'js/date-time/moment.js',
         'js/date-time/daterangepicker.js',
