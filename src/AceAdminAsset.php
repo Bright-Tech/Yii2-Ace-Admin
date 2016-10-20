@@ -52,8 +52,8 @@ class AceAdminAsset extends AssetBundle
         'js/date-time/daterangepicker.js',
         'js/date-time/bootstrap-datetimepicker.js',
         'js/init-elements.js',
-        'js/x-editable/ace-editable.js',
         'js/x-editable/bootstrap-editable.js'
+        'js/x-editable/ace-editable.js',
     ];
 
     public $depends = [
