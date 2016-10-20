@@ -37,8 +37,16 @@ class NestListView extends Widget
 
     public $buttonSeparator = '';
 
+    /**
+     * 初始状态是否为收起状态
+     * @var bool
+     */
     public $collapseAll = false;
 
+    /**
+     * 是否可拖拽
+     * @var bool
+     */
     public $dragable = true;
 
 
@@ -221,13 +229,12 @@ class NestListView extends Widget
             collapseBtnHTML : '{$this->collapseBtnHTML}',
             group           : '{$this->group}',
             maxDepth        : '{$this->maxDepth}',
-            threshold       : '{$this->threshold}'
+            threshold       : '{$this->threshold}',
+            collapseAll     : '{$this->collapseAll}'
         };
         BrightNestableList.initNestableList();
         ";
-        if ($this->collapseAll) {
-            $jsString .= "$('.dd').nestable('collapseAll')";
-        }
+
         return $view->registerJs($jsString);
     }
 }
