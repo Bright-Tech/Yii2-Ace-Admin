@@ -160,13 +160,20 @@ class NestListView extends Widget
                 if (ArrayHelper::keyExists($button, $this->buttons)) {
                     $buttonTemplate = ArrayHelper::getValue($this->buttons, $button);
                     $url = ArrayHelper::getValue($buttonTemplate, 'url');
+                    $options = ArrayHelper::getValue($buttonTemplate, 'options', []);
+                    $iconClass = ArrayHelper::getValue($buttonTemplate, 'iconClass', '');
+
+
                     $url['id'] = $model['id'];
                     $url = Url::to($url);
-                    $text = $this->showActionButtonContent ? $buttonTemplate['text'] : '';
-                    if (isset($buttonTemplate['iconClass'])) {
-                        $text .= Html::tag('i', '', ['class' => $buttonTemplate['iconClass']]);
+                    $text = '';
+                    if ($this->showActionButtonContent) {
+                        $text = ArrayHelper::getValue($buttonTemplate, 'text', '');
                     }
-                    $buttons[] = Html::a($text, $url, ['class' => ArrayHelper::getValue($buttonTemplate, 'linkClass', '')]);
+                    if (ArrayHelper::keyExists('iconClass', $buttonTemplate)) {
+                        $text .= Html::tag('i', '', ['class' => $iconClass]);
+                    }
+                    $buttons[] = Html::a($text, $url, $options);
                 } else {
                     throw new InvalidConfigException("Button does not in the Buttons");
                 }
