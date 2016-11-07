@@ -49,6 +49,12 @@ class NestListView extends Widget
      */
     public $dragable = true;
 
+    /**
+     * 是否可选中
+     * @var bool
+     */
+    public $selectable = false;
+
 
     /**
      * plugin options
@@ -163,9 +169,11 @@ class NestListView extends Widget
                     $options = ArrayHelper::getValue($buttonTemplate, 'options', []);
                     $iconClass = ArrayHelper::getValue($buttonTemplate, 'iconClass', '');
 
+                    if(is_array($url)){
+                        $url['id'] = $model['id'];
+                        $url = Url::to($url);
+                    }
 
-                    $url['id'] = $model['id'];
-                    $url = Url::to($url);
                     $text = '';
                     if ($this->showActionButtonContent) {
                         $text = ArrayHelper::getValue($buttonTemplate, 'text', '');
