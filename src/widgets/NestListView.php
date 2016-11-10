@@ -142,17 +142,17 @@ class NestListView extends Widget
     public function renderItem($model, $key, $index)
     {
         $content = ArrayHelper::getValue($model, 'content');
+        $options = ArrayHelper::getValue($model, 'options', []);
         $buttons = $this->renderButtons($model);
 
         $itemHtml = Html::tag('div', $content . $buttons, ['class' => 'dd-handle']);
 
-        $itemData = ArrayHelper::getValue($model, 'data', []);
-        $itemData['id'] = $key;
 
         if (ArrayHelper::keyExists('items', $model)) {
             $itemHtml .= $this->renderItems(ArrayHelper::getValue($model, 'items'));
         }
-        return Html::tag('li', $itemHtml, ['class' => 'dd-item', 'data' => $itemData]);
+        Html::addCssClass($options, $this->itemClass);
+        return Html::tag('li', $itemHtml, $options);
 
     }
 
