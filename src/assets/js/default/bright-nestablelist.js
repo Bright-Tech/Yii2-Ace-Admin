@@ -22,13 +22,13 @@ var BrightNestableList = {
             handler.nestable('collapseAll');
         }
         me.NestableListHandler[selector] = handler;
-        me.bindEvents();
+        me.bindEvents(selector);
     },
-    bindEvents: function () {
+    bindEvents: function (selector) {
         var me = this;
         if (me.selectable) {
             var handleSelector = '.dd-handle';
-            $(document).on('click', handleSelector, function (e) {
+            $(selector).on('click', handleSelector, function (e) {
                 var item = this;
                 me.toggleItem(item);
             });
