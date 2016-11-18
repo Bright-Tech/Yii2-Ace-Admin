@@ -30,6 +30,6 @@ class AceAdminWysiwygAsset extends AssetBundle
     ];
 
     public $depends = [
-        'bright\theme\yii2\aceadmin\AceAdminAsset'
+        'bright_tech\yii2theme\aceadmin\AceAdminAsset'
     ];
 }
