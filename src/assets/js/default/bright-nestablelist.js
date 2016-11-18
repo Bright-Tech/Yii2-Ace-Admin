@@ -7,6 +7,7 @@ var BrightNestableList = {
      */
     NestableListHandler: [],
     NestableListOptions: [],
+    selectable: false,
     /**
      *
      * @param selector
@@ -25,13 +26,13 @@ var BrightNestableList = {
     },
     bindEvents: function () {
         var me = this;
-        var handleSelector = '.dd-handle';
-
-        $(document).on('click', handleSelector, function (e) {
-            console.log(e);
-            var item = this;
-            me.toggleItem(item);
-        })
+        if (me.selectable) {
+            var handleSelector = '.dd-handle';
+            $(document).on('click', handleSelector, function (e) {
+                var item = this;
+                me.toggleItem(item);
+            });
+        }
     },
     expandItem: function (li, selector) {
         if (!selector) {
@@ -49,6 +50,7 @@ var BrightNestableList = {
     collapseItem: function (li) {
         jQuery(selector).nestable('collapseItem', li);
     },
+
     /**
      * 切换选中状态
      */

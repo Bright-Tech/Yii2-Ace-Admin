@@ -17,8 +17,8 @@ class NestListView extends Widget
      * The "tag" element specifies the tag name of the container element and defaults to "div".
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $options = [];
-
+    public $options = ['class' => 'dd', 'id' => 'nestable'];
+    public $itemOptions = [];
     /**
      * @var \yii\data\DataProviderInterface the data provider for the view. This property is required.
      */
@@ -53,7 +53,7 @@ class NestListView extends Widget
      * 是否可选中
      * @var bool
      */
-    public $selectable = false;
+    public $selectable = true;
 
 
     /**
@@ -114,7 +114,8 @@ class NestListView extends Widget
         if (count($this->items) > 0) {
             $html = $this->renderItems($this->items);
         }
-        return Html::tag('div', $html, ['class' => 'dd', 'id' => 'nestable']);
+        Html::addCssClass($this->options, $this->rootClass);
+        return Html::tag('div', $html, $this->options );
     }
 
     /**
@@ -151,8 +152,8 @@ class NestListView extends Widget
         if (ArrayHelper::keyExists('items', $model)) {
             $itemHtml .= $this->renderItems(ArrayHelper::getValue($model, 'items'));
         }
-        Html::addCssClass($options, $this->itemClass);
-        return Html::tag('li', $itemHtml, $options);
+        Html::addCssClass($this->itemOptions, $this->itemClass);
+        return Html::tag('li', $itemHtml, array_merge($this->itemOptions, $options));
 
     }
 
@@ -169,7 +170,7 @@ class NestListView extends Widget
                     $options = ArrayHelper::getValue($buttonTemplate, 'options', []);
                     $iconClass = ArrayHelper::getValue($buttonTemplate, 'iconClass', '');
 
-                    if(is_array($url)){
+                    if (is_array($url)) {
                         $url['id'] = $model['id'];
                         $url = Url::to($url);
                     }
@@ -247,6 +248,7 @@ class NestListView extends Widget
             threshold       : '{$this->threshold}',
             collapseAll     : '{$this->collapseAll}'
         };
+        BrightNestableList.selectable = " . ($this->selectable ? 'true' : 'false') . "
         BrightNestableList.initNestableList();
         ";
 
