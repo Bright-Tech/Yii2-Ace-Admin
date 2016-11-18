@@ -17,7 +17,7 @@ class NestListView extends Widget
      * The "tag" element specifies the tag name of the container element and defaults to "div".
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $options = ['class' => 'dd', 'id' => 'nestable'];
+    public $options = ['class' => 'dd'];
     public $itemOptions = [];
     /**
      * @var \yii\data\DataProviderInterface the data provider for the view. This property is required.
@@ -93,11 +93,17 @@ class NestListView extends Widget
      */
     public function init()
     {
+        NestableAsset::register($this->getView());
         if ($this->dataProvider !== null) {
             $this->prepareItems();
         }
         if ($this->items === null) {
             throw new InvalidConfigException('The "dataProvider" property or "items" property must be set at least one.');
+        }
+        Html::addCssClass($this->options, $this->rootClass);
+
+        if (!ArrayHelper::keyExists('id', $this->options)) {
+            $this->options['id'] = uniqid('w_');
         }
 
     }
@@ -107,15 +113,14 @@ class NestListView extends Widget
      */
     public function run()
     {
-        $view = $this->getView();
-        NestableAsset::register($view);
-        $this->renderJS($view);
+
+        $this->renderJS();
         $html = '';
         if (count($this->items) > 0) {
             $html = $this->renderItems($this->items);
         }
-        Html::addCssClass($this->options, $this->rootClass);
-        return Html::tag('div', $html, $this->options );
+
+        return Html::tag('div', $html, $this->options);
     }
 
     /**
@@ -226,7 +231,7 @@ class NestListView extends Widget
     /**
      * @param View $view
      */
-    public function renderJS(View $view)
+    public function renderJS()
     {
         $jsString = "
         BrightNestableList.NestableListOptions = {
@@ -249,9 +254,9 @@ class NestListView extends Widget
             collapseAll     : '{$this->collapseAll}'
         };
         BrightNestableList.selectable = " . ($this->selectable ? 'true' : 'false') . "
-        BrightNestableList.initNestableList();
+        BrightNestableList.initNestableList('#" . $this->options['id'] . "');
         ";
 
-        return $view->registerJs($jsString);
+        return $this->getView()->registerJs($jsString);
     }
 }
