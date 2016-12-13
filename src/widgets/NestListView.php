@@ -47,7 +47,7 @@ class NestListView extends Widget
      * 是否可拖拽
      * @var bool
      */
-    public $dragable = true;
+    public $draggable = true;
 
     /**
      * 是否可选中
@@ -157,8 +157,8 @@ class NestListView extends Widget
         if (ArrayHelper::keyExists('items', $model)) {
             $itemHtml .= $this->renderItems(ArrayHelper::getValue($model, 'items'));
         }
-        Html::addCssClass($this->itemOptions, $this->itemClass);
-        return Html::tag('li', $itemHtml, array_merge($this->itemOptions, $options));
+        Html::addCssClass($options, $this->itemClass);
+        return Html::tag('li', $itemHtml, $options);
 
     }
 
@@ -234,14 +234,19 @@ class NestListView extends Widget
     public function renderJS()
     {
         $jsString = "
-        BrightNestableList.NestableListOptions = {
+        $('#" . $this->options['id'] . "').brightNestable({
+            collapseAll: ".($this->collapseAll?'true':'false').",
+            draggable:  ".($this->draggable?'true':'false').",
+            selectable:  ".($this->selectable?'true':'false').",
+    
+            selectedClass: 'dd-selected',
             listNodeName    : '{$this->listNodeName}',
             itemNodeName    : '{$this->itemNodeName}',
             rootClass       : '{$this->rootClass}',
             listClass       : '{$this->listClass}',
             itemClass       : '{$this->itemClass}',
             dragClass       : '{$this->dragClass}',
-            handleClass     : '" . ($this->dragable ? 'dd-handle' : 'dd-nodrag-handle') . "',
+            handleClass     : '{$this->handleClass}',
             collapsedClass  : '{$this->collapsedClass}',
             placeClass      : '{$this->placeClass}',
             noDragClass     : '{$this->noDragClass}',
@@ -252,11 +257,9 @@ class NestListView extends Widget
             maxDepth        : '{$this->maxDepth}',
             threshold       : '{$this->threshold}',
             collapseAll     : '{$this->collapseAll}'
-        };
-        BrightNestableList.selectable = " . ($this->selectable ? 'true' : 'false') . "
-        BrightNestableList.initNestableList('#" . $this->options['id'] . "');
+        });
         ";
 
-        return $this->getView()->registerJs($jsString);
+       return $this->getView()->registerJs($jsString);
     }
 }
