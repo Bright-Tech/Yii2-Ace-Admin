@@ -141,7 +141,7 @@ var BrightNestableList = {
         expandItem: function (li) {
             this.nestableListObj.expandItem(li);
             if ($(li).parent().closest('.' + this.options.itemClass).length > 0) {
-                this.expandItem($(li).parent().closest(this.options.itemClass));
+                this.expandItem($(li).parent().closest('.' + this.options.itemClass));
             }
         },
         collapseItem: function (li) {
