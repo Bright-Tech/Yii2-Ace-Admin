@@ -14,46 +14,36 @@ use yii\web\AssetBundle;
 class AceAdminAsset extends AssetBundle
 {
 
-    public $sourcePath = '@vendor/bright-tech/yii2-ace-admin-theme/src/assets';
-    
-    public $jsOptions = [
-        'position' => \yii\web\View::POS_HEAD
-    ];
+    public $sourcePath = '@vendor/bright-tech/ace-admin/assets';
+
     
     public $css = [
-        'css/font-awesome.css',
         'css/ace-fonts.css',
         'css/ace.css',
-        'css/bootstrap-datepicker3.css',
-        'css/bootstrap-timepicker.css',
-        'css/daterangepicker.css',
-        'css/bootstrap-datetimepicker.css',
-        'css/bootstrap-editable.css'
+        'css/ace.skins.css',
     ];
     
     public $js = [
-        'js/fuelux/fuelux.tree.js',
-        'js/fuelux/fuelux.spinner.js',
-        'js/ace/elements.scroller.js',
-        'js/ace/elements.colorpicker.js',
-        'js/ace/elements.fileinput.js',
-        'js/ace/elements.typeahead.js',
-        'js/ace/elements.spinner.js',
-        'js/ace/elements.treeview.js',
-        'js/ace/elements.aside.js',
-        'js/ace/ace.js',
-        'js/ace/ace.sidebar.js',
-        'js/ace/ace.sidebar-scroll-1.js',
-        'js/ace/ace.widget-box.js',
-        'js/date-time/bootstrap-datepicker.js',
-        'js/date-time/bootstrap-datepicker.zh-CN.js',
-        'js/date-time/bootstrap-timepicker.js',
-        'js/date-time/moment.js',
-        'js/date-time/daterangepicker.js',
-        'js/date-time/bootstrap-datetimepicker.js',
-        'js/init-elements.js',
-        'js/x-editable/bootstrap-editable.js',
-        'js/x-editable/ace-editable.js'
+        'js/elements.scroller.js',
+        'js/elements.colorpicker.js',
+        'js/elements.fileinput.js',
+        'js/elements.typeahead.js',
+        'js/elements.spinner.js',
+        'js/elements.treeview.js',
+        'js/elements.aside.js',
+        'js/ace.js',
+        'js/ace.basics.js',
+        'js/ace.scrolltop.js',
+        'js/ace.ajax-content.js',
+        'js/ace.touch-drag.js',
+        'js/ace.sidebar.js',
+        'js/ace.sidebar-scroll-1.js',
+        'js/ace.sidebar-scroll-1.js',
+        'js/ace.submenu-hover.js',
+        'js/ace.widget-box.js',
+        'js/ace.widget-on-reload.js',
+        'js/ace.searchbox-autocomplete.js',
+//        'js/ace.sidebar.js',
     ];
 
     public $depends = [

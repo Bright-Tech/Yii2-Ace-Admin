@@ -14,11 +14,28 @@
     "require": {
         "php": ">=5.4.0",
         "yiisoft/yii2": "~2.0.0",
-        "yiisoft/yii2-bootstrap": "*"
+        "yiisoft/yii2-bootstrap": "*",
+        "bright-tech/ace-admin": "*"
     },
     "autoload": {
         "psr-4": {
             "bright_tech\\yii2theme\\aceadmin\\": "src/"
         }
-    }
+    },
+    "extra": {
+        "asset-installer-paths": {
+            "npm-asset-library": "vendor/npm",
+            "bower-asset-library": "vendor/bower"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://git.oschina.net/brightech/AceAdmin"
+        },
+        {
+            "type": "vcs",
+            "url": "https://git.oschina.net/brightech/InspiniaAdmin"
+        }
+    ]
 }
