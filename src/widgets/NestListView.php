@@ -151,7 +151,8 @@ class NestListView extends Widget
         $options = ArrayHelper::getValue($model, 'options', []);
         $buttons = $this->renderButtons($model);
 
-        $itemHtml = Html::tag('div', $content . $buttons, ['class' => 'dd-handle']);
+        $itemHtml = Html::tag('div', $content . $buttons, ['class' => 'dd-content-container']);
+        $itemHtml = Html::tag('div', $itemHtml, ['class' => 'dd-handle']);
 
 
         if (ArrayHelper::keyExists('items', $model)) {
@@ -235,9 +236,9 @@ class NestListView extends Widget
     {
         $jsString = "
         $('#" . $this->options['id'] . "').brightNestable({
-            collapseAll: ".($this->collapseAll?'true':'false').",
-            draggable:  ".($this->draggable?'true':'false').",
-            selectable:  ".($this->selectable?'true':'false').",
+            collapseAll: " . ($this->collapseAll ? 'true' : 'false') . ",
+            draggable:  " . ($this->draggable ? 'true' : 'false') . ",
+            selectable:  " . ($this->selectable ? 'true' : 'false') . ",
     
             selectedClass: 'dd-selected',
             listNodeName    : '{$this->listNodeName}',
@@ -260,6 +261,6 @@ class NestListView extends Widget
         });
         ";
 
-       return $this->getView()->registerJs($jsString);
+        return $this->getView()->registerJs($jsString);
     }
 }
